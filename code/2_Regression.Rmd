@@ -1,35 +1,34 @@
----
-title: "API_209_Final"
-author: "GoldenState Warriors"
-date: "11/1/2021"
-output:
-  html_document: default
-  pdf_document: default
----
 
 ```{r setup, include = TRUE}
 knitr::opts_chunk$set(echo = TRUE)
+#install.packages("glmnet")
+#install.packages("MLmetrics")
+#install.packages("neuralnet")
+#install.packages("keras")
+#install.packages("mlbench")
+#install.packages("magrittr")
+#install.packages("tensorflow")
+#install.packages("HDCI")
+
+
 library(tidyverse)
-library(stargazer)
 library(glmnet)
 library(MLmetrics)
-library(mice)
-library(readxl)
 library(neuralnet)
 library(keras)
 library(mlbench)
 library(magrittr)
 library(tensorflow)
 library(HDCI)
+library(reticulate)
 
+reticulate::py_discover_config()
 
-#install_tensorflow()
-#install_tensorflow(version = "2.0.0")
 ```
 
 
 ```{r data_import, include = TRUE}
-data <- read.csv("data.csv") %>% 
+data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") %>% 
         select(-X)
 
 ```
@@ -63,7 +62,7 @@ MSE_func <- function(model, data){
 
 
 ```{r long, include=TRUE}
-f_long_rhs  <- str_c(colnames(data)[10:ncol(data)], collapse = " + ")
+f_long_rhs  <- str_c(colnames(data)[11:ncol(data)], collapse = " + ")
 f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
 
 model_long  <- lm(f_long_c, data = data)
@@ -76,7 +75,7 @@ write.csv(result_long[[2]], "result_long.csv")
 ```{r lasso, include=TRUE}
 
 MSE_table     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
-
+i = 1
 ## for loop
 for(i in 1:14){
   training   <- data %>% 
@@ -104,13 +103,18 @@ for(i in 1:14){
   #summary(cv_model)
   #plot(cv_model)
   #coef_lasso <- enframe(coef(cv_model, s="lambda.min")[,1])
-  
-  MSE_table[i,1] <- MSE(predict(cv_model, newx = x_hold, s="lambda.min"), y_hold)
+  pred <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
+          rename(pred = lambda.min) %>% 
+          mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
+          as.matrix()
+    
+          
+  MSE_table[i,1] <- MSE(pred, y_hold)
 }
  MSE_table[15,1]<- mean(MSE_table[1:14,1])
  MSE_table
  
- #write.csv(MSE_table, "LASSO.csv")
+ write.csv(MSE_table, "result_LASSO.csv")
 ```
 
 ```{r LMG, include = TRUE}
@@ -136,19 +140,28 @@ model_2
 
 ```{r Random_Forest, include=TRUE}
 #install.packages("randomForest")
+#install.packages("caret")
+install.packages("doParallel")
+library(doParallel)
+library(caret)
 library(randomForest)
 set.seed(02138)
 
 MSE_table     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
+cl<-makePSOCKcluster(8)
 
-
+i =1
 for(i in 1:14){
   training          <- data %>% 
                        filter(District != District_list[i])
   holdout           <- data %>% 
                        filter(District == District_list[i])
+  
+  registerDoParallel(cl)
 
-  model_RF          <- randomForest(oos_g_5to14~., data= training, subset = c(1:1000), importance = TRUE)
+  model_RF <-train(oos_g_5to14~., data=training, method='rf')
+
+  #model_RF          <- randomForest(oos_g_5to14~., data= training, importance = TRUE)
 
   pred_RF           <- predict(model_RF, newdata=holdout)
   MSE_table_RF[i,1] <- mean((pred_RF-holdout$oos_g_5to14)^2)
@@ -198,7 +211,7 @@ for(i in 1:14){
   #       layer_dense(units = 1)
   model %>%
         layer_dense(units = 10, activation = 'relu', input_shape = c(339)) %>%
-        layer_dropout(rate=0.55)  %>%
+        layer_dropout(rate=0.50)  %>%
         layer_dense(units = 5, activation = 'relu')  %>%
         layer_dropout(rate=0.2)  %>%
          layer_dense(units = 1)
@@ -214,7 +227,8 @@ for(i in 1:14){
                   batch_size = 32,
                   validation_split = 0.2)
   
-  model %>% evaluate(x_hold_std, y_hold)
+  model %>%
+    evaluate(x_hold_std, y_hold)
   pred <- model %>% predict(x_hold_std)
  
   MSE_table_NN[i,1] <- mean((y_hold-pred)^2) 
@@ -224,7 +238,7 @@ for(i in 1:14){
  MSE_table_NN[15,1]<- mean(MSE_table_NN[1:14,1])
  MSE_table_NN
 
-
+ write.csv(MSE_table_NN, "result_NN.csv")
 
 ```
 
@@ -240,7 +254,7 @@ for(i in 1:14){
   y_train <- training$oos_g_5to14 %>% 
              as.matrix()
   x_train <- training %>% 
-             select(colnames(data)[11:ncol(data)]) %>% 
+             dplyr::select(colnames(data)[11:ncol(data)]) %>% 
              as.matrix()
   
   ## holdout
@@ -248,7 +262,7 @@ for(i in 1:14){
             as.matrix()
   
   x_hold <- holdout %>% 
-            select(colnames(data)[11:ncol(data)]) %>% 
+            dplyr::select(colnames(data)[11:ncol(data)]) %>% 
             as.matrix()
   
   ## LASSO
@@ -256,21 +270,26 @@ for(i in 1:14){
   summary(cv_model)
   #plot(cv_model)
   coef_lasso <- enframe(coef(cv_model, s="lambda.min")[,1]) %>% 
-                filter(value != 0)
+                filter(value != 0,
+                       name != "(Intercept)") %>% 
+                dplyr::select(name) %>%
+                as.matrix()
   
-oosg_udai <- predict(cv_model, newx = x_hold, s="lambda.min")
+  pred <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
+          rename(pred = lambda.min) %>% 
+          mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
+          as.matrix()
+
 
 plot(x = oosg_udai, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
 
 
-#write.csv(oosg_udai, "oosg_udai.csv")
-
-
+#write.csv(pred, "oosg_udai.csv")
 
 ```
 
 ```{r confidence_interval, include=TRUE}
-B <- 500
+B <- 100
 pred <- array(data = NA, dim = c(nrow(holdout),B))
 for (i in 1:B) {
   boot <- sample(nrow(x_train), nrow(x_train), replace = TRUE)
@@ -300,63 +319,24 @@ CI <- pred %>%
 
 ```
 
-# 6. regression in ratio
-```{r data_raio, include = FALSE}
-num_unit <- unique(data_list$Unit)[c(3, 4, 5, 11)] ## picking up level variables
-
-num_list <- data_list %>% 
-            filter(`Change during reclean (24 Apr 2020)?` != "Dropped") %>% 
-            mutate(Variable = ifelse(Variable == "main_cl_mc", "main_cl_m", Variable)) %>% 
-            filter(Unit %in% num_unit) %>% 
-            select(Variable) %>% 
-            filter(Variable != "tch_male")
 
 
-data_ratio <- data %>% 
-              mutate(oos_g_5to14 = oos_g_5to14 / tot_p) %>% 
-              rename(oosg_ratio = oos_g_5to14) %>% 
-              mutate_at(.vars = vars(num_list$Variable),
-                        .funs = list(ratio =  ~. /tot_p)) %>% 
-              select(-num_list$Variable)
-```
 
-```{r regression_ratio, include = FALSE}
-District_list  <- unique(data_ratio$District)
-MSE_table      <- matrix(NA, nrow = length(unique(data_ratio$District)) + 1, ncol = 1)
 
-model          <- lm(oosg_ratio ~ ASER + numschools_ratio, data = data_ratio)
 
-MSE_ratio_func <- function(model, data_ratio, data){
-                  for(i in 1:14){
-                  training       <- data_ratio %>% 
-                                    filter(District != District_list[i])
-                  holdout        <- data_ratio %>% 
-                                    filter(District == District_list[i])
-                  
-                  answer         <- data %>% 
-                                    filter(District == District_list[i])
-                  
-                  model_1        <- lm(model$call[2], data = training)
-                  
-                  MSE_table[i,1] <- mean((predict(model_1, newdata = holdout)*holdout$tot_p - 
-                                          answer$oos_g_5to14)^2, na.rm = TRUE)
-                  }
-                  
-                  MSE_table[15,1]<- mean(MSE_table[1:14,1])
-                  return(list(result <- summary(model_1), MSE <- MSE_table))
-}
+
+```{r re}
+#install.packages("relaimpo")
+
+library(relaimpo) #For calculating relative importance of each variables
+
+f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
+f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
+
+data_rel <- data[, c("oos_g_5to14",coef_lasso[,1])]
+relative_imp <- calc.relimp(f_long_c,data=data_rel,
+                   type = c("lmg"), rela = TRUE, na.omit=TRUE )
+
+relative_imp
 
 ```
-
-```{r long, include = TRUE}
-f_long_rhs        <- str_c(colnames(data_ratio)[10:ncol(data_ratio)], collapse = " + ")
-f_long_c          <- as.formula(str_c("oosg_ratio ~ ", f_long_rhs))
-
-model_long        <- lm(f_long_c, data = data_ratio)
-result_ratio_long <- MSE_ratio_func(model_long, data_ratio, data)
-
-result_ratio_long[[2]]
-#write.csv(result_long[[2]], "result_long.csv")
-
-```
-
