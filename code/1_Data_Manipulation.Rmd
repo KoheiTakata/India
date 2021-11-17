@@ -1,0 +1,255 @@
+---
+title: "API_209_Final"
+author: "GoldenState Warriors"
+date: "11/1/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#install.packages("tidyverse")
+#install.packages("stargazer")
+#install.packages("mice")
+#install.packages("readxl")
+#install.packages("stringr")
+
+library(tidyverse)
+library(stargazer)
+library(mice)
+library(readxl)
+library(stringr)
+
+
+```
+
+## 1. Importing the data
+
+```{r import data, include = TRUE}
+ASER   <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/aser_data.csv") %>% 
+          select(-X) ## remove IDs
+d2d    <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/d2d_data.csv") %>% 
+          select(-c(is_duplicate, X)) ## remove IDs
+census <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/dise_census_training.csv") %>% 
+          select(-c(X, index, missing_census, match_dise_census,cluster_name_DISE, ## remove non-necessary cols
+                  village_name_CENSUS)) %>% 
+          mutate(NAs = rowSums(is.na(.)))            ## col for counting NAs in a row
+
+shrID  <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/shrug_names.csv") 
+
+#data_list <-  readxl::read_xlsx("https://github.com/KoheiTakata/India/raw/main/data/data_dictionary.xlsx")
+```
+
+## 2. Descriptive Statistics for PSet
+
+
+```{r descriptive, include = FALSE}
+DES_OOSG <- d2d %>% 
+            group_by(D2D_year) %>% 
+            summarize(Mean      = mean(oos_g_5to14),
+                      STD       = sd(oos_g_5to14),
+                      "25th"    = quantile(oos_g_5to14,  probs = 0.25),
+                      "Median"  = quantile(oos_g_5to14,  probs = 0.50),
+                      "75th"    = quantile(oos_g_5to14,  probs = 0.75),
+                      "90th"    = quantile(oos_g_5to14,  probs = 0.90),
+                      N         = n())
+
+OOSG_chart <- d2d %>% 
+              mutate(year = factor(D2D_year))
+
+chart1 <- ggplot(data = OOSG_chart, aes(x = oos_g_5to14, color=year, fill=year))+
+          geom_histogram(alpha=0.5, position="identity", binwidth = 20)+
+          scale_x_continuous(name   = "Number of out school girls in Village",
+                             breaks = seq(0, 200, 20),
+                             limits = c(0, 200)) +
+          facet_wrap(~year)
+
+chart2 <- ggplot(data = OOSG_chart, aes(x = oos_g_5to14, color=year, fill=year))+
+          geom_histogram(aes(y = ..density..),alpha=0.5, position="identity", binwidth = 5)+
+          scale_x_continuous(name  = "Number of out school girls in Village",
+                            breaks = seq(0, 200, 20),
+                            limits = c(0, 200)) +
+          facet_wrap(~year)
+
+
+DES_OOSG
+
+chart2
+
+chart3 <- boxplot(oos_g_5to14 ~ year, 
+                  data   = OOSG_chart, 
+                  main   = "Boxplots for each year",
+                  xlab   = "Year", 
+                  ylab   = "Number of out school girls in Village", 
+                  col    = "orange", 
+                  border = "brown",
+                  ylim   = c(0, 400)) 
+
+```
+
+
+## 3. Additional Dataset
+```{r additional data, include = TRUE}
+
+shr_ID  <- shrID %>% 
+           mutate(state_ID   = str_sub(shrid, start = 4, end = 5),
+                  village_ID = str_sub(shrid, start = 7, end = 100)) 
+
+DISE_ID <- census %>% 
+           select(1:6, village_code_CENSUS, StateDistrictCode) %>% 
+           mutate(state_ID = ifelse(nchar(StateDistrictCode) == 3,        # if 3 => "0X", if 4 => "XX"
+                                    paste("0", str_sub(StateDistrictCode, 1, 1), sep = ""),
+                                    str_sub(StateDistrictCode, 1, 2))) %>% 
+           mutate(village_ID = str_sub(village_code_CENSUS, 6, 11)) %>% 
+           filter(VillageCode %in% d2d$VillageCode) %>% 
+           left_join(shr_ID, by = c("state_ID", "village_ID")) %>% 
+           select(VillageCode, shrid)
+
+
+#write.csv(DISE_ID, "DISE_ID.csv")
+
+poverty    <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/shrug_secc_poverty_rate.csv") %>% 
+              select(shrid,    secc_pov_rate_rural) %>% 
+              rename(poverty = secc_pov_rate_rural) %>% 
+              left_join(DISE_ID, by = "shrid") %>% 
+              select(VillageCode, poverty)
+
+```
+
+## 4. Merging the data
+Looking at the ASER data, there should be 197 districts in India. But, in the d2d data, only 14 districts are included.  
+In the problem setting, it seems only these 13 districts are in concern. Therefore, I aggregate the data for each village in these 13 districts only.
+
+First, I aggregate the data for d2d and ASER.
+
+```{r merge_data, include=TRUE}
+census_2014_ori <- census %>%                                                                 
+                   select(VillageCode, ends_with("1314")) %>%                                ## extract DISE data for 2013/14
+                   rename_at(vars(ends_with("1314")), funs(str_replace(., "1314", ""))) %>%  ## remove last digit of 1314
+                   rename_at(vars(ends_with("_"))   , funs(str_replace(., "_", ""))) %>%     ## remove last _ for "village_"
+                   mutate(DISE_year = 2014) %>%                                              ## record DISE base year
+                   relocate(DISE_year)                                                       ## move the DISE_year to the first col
+              
+census_2017_ori <- census %>% 
+                   select(VillageCode, ends_with("1617")) %>% 
+                   rename_at(vars(ends_with("1617")), funs(str_replace(., "1617", ""))) %>% 
+                   rename_at(vars(ends_with("_"))   , funs(str_replace(., "_", ""))) %>% 
+                   mutate(DISE_year = 2017) %>% 
+                   relocate(DISE_year)
+
+census_2018_ori <- census %>% 
+                   select(VillageCode, ends_with("1718")) %>% 
+                   rename_at(vars(ends_with("1718")), funs(str_replace(., "1718", ""))) %>% 
+                   rename_at(vars(ends_with("_"))   , funs(str_replace(., "_", ""))) %>% 
+                   mutate(DISE_year = 2018) %>% 
+                   relocate(DISE_year)
+
+census_DISE <- census %>% 
+               select(VillageCode, ends_with("c11"), NAs) %>%                           ## extract cols for census data
+               rename_at(vars(ends_with("c11")), funs(str_replace(., "c11", "")))       ## remove last c11
+
+
+
+```
+
+```{r data_imputation_census, include=TRUE}
+## Imputation for Census data
+imp_census <- function(x, y){
+                for(i in 1:nrow(x)){
+                  for(j in 1:ncol(x)){
+                    if(is.na(x[i,j])== TRUE){
+                      x[i,j]= y[i,j]
+                    }  
+                  }
+                }
+              return(x)
+              }
+
+census_2018 <- imp_census(census_2018_ori, census_2017_ori) %>%   ## missing value for 2018 <- imputed by 2017
+               imp_census(census_2014_ori)                        ## if still missing       <- imputed by 2014
+               
+census_2017 <- imp_census(census_2017_ori, census_2018_ori) %>% 
+               imp_census(census_2014_ori)
+
+
+data_temp <- d2d %>% 
+             left_join(ASER, by = "District")                     ## merge ASER into d2d
+
+data_2016 <- data_temp %>% 
+             filter(D2D_year == 2016) %>%                         ## filter d2d 2016 data
+             left_join(census_2017, by = "VillageCode")           ## merge with DISE 2017 year (closest year)
+
+data_2017 <- data_temp %>% 
+             filter(D2D_year == 2017) %>% 
+             left_join(census_2017, by = "VillageCode")
+
+
+data_2019 <- data_temp %>% 
+             filter(D2D_year == 2019) %>% 
+             left_join(census_2017, by = "VillageCode")
+
+data_2020 <- data_temp %>% 
+             filter(D2D_year == 2020) %>% 
+             left_join(census_2017, by = "VillageCode")
+
+data_ori  <- data_2016 %>%                                  ## merge all filtered data for d2d and DISE
+             bind_rows(data_2017) %>% 
+             bind_rows(data_2019) %>% 
+             bind_rows(data_2020) %>% 
+             left_join(census_DISE, by = "VillageCode") %>% ## merge census data
+             left_join(poverty,     by = "VillageCode")
+
+```
+
+```{r data_aggregate, include = FALSE}
+data_temp <- d2d %>% 
+             left_join(ASER, by = "District")             ## merge ASER into d2d
+
+data_2016 <- data_temp %>% 
+             filter(D2D_year == 2016) %>%                 ## filter d2d 2016 data
+             left_join(census_2017, by = "VillageCode")   ## merge with DISE 2017 year (closest year)
+
+data_2017 <- data_temp %>% 
+             filter(D2D_year == 2017) %>% 
+             left_join(census_2017, by = "VillageCode")
+
+
+data_2019 <- data_temp %>% 
+             filter(D2D_year == 2019) %>% 
+             left_join(census_2017, by = "VillageCode")
+
+data_2020 <- data_temp %>% 
+             filter(D2D_year == 2020) %>% 
+             left_join(census_2017, by = "VillageCode")
+
+data_ori  <- data_2016 %>%                                 ## merge all filtered data for d2d and DISE
+             bind_rows(data_2017) %>% 
+             bind_rows(data_2019) %>% 
+             bind_rows(data_2020) %>% 
+             left_join(census_DISE, by = "VillageCode") %>% ## merge census data
+             left_join(poverty,     by = "VillageCode")
+
+```
+
+```{r data_imputation_all, include= TRUE}
+
+##dont try to run: it takes 6 hours
+
+data_unimp <- data_ori %>% 
+              select(VillageCode:D2D_year, DISE_year, oos_g_5to14, ASER, village:poverty) %>% 
+              mutate(District = as.factor(District))
+
+init <- mice(data_unimp, maxit = 0)
+
+predM = init$predictorMatrix
+
+predM[, c(1,2, 7, 8, 9, 10)] = 0
+
+set.seed(02138)
+#imputed = mice(data_unimp, method= "cart", predictorMatrix=predM, m= 5, maxit = 30) 
+imputed <- parlmice(data_unimp, method= "cart", predictorMatrix=predM, m= 5, maxit = 10, n.core = 5, n.imp.core = 1) 
+data    <- complete(imputed)
+#write.csv(data, "data.csv")
+```
