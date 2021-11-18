@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("HDCI")
 
 
-library(tidyverse)
 library(glmnet)
 library(MLmetrics)
 library(neuralnet)
@@ -21,6 +20,8 @@ library(magrittr)
 library(tensorflow)
 library(HDCI)
 library(reticulate)
+library(tidyverse)
+
 
 reticulate::py_discover_config()
 
@@ -29,7 +30,24 @@ reticulate::py_discover_config()
 
 ```{r data_import, include = TRUE}
 data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") %>% 
-        select(-X)
+        select(-X) %>% 
+        mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
+                             grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
+                             grade7_b + grade7_g + grade8_b + grade8_g,
+               stu_pop     = num_student/tot_p*100)
+
+write.csv(data, "data.csv")
+
+
+```
+
+```{r adding_variable, include=TRUE}
+data <- data_imp %>% 
+        mutate(num_student = sum(grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
+                                 grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
+                                 grade7_b + grade7_g + grade8_b + grade8_g),
+               stu_pop     = num_student/tot_p*100)
+write.csv(data, "data.csv")
 
 ```
 
@@ -329,7 +347,6 @@ CI <- pred %>%
 #install.packages("relaimpo")
 
 library(relaimpo) #For calculating relative importance of each variables
-
 f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
 f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
 

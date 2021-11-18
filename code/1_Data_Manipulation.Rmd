@@ -251,16 +251,6 @@ set.seed(02138)
 #imputed = mice(data_unimp, method= "cart", predictorMatrix=predM, m= 5, maxit = 5) 
 imputed <- parlmice(data_unimp, method= "cart", predictorMatrix=predM, m =5, maxit = 4) 
 data_imp<- complete(imputed)
-#write.csv(data, "data.csv")
-```
-
-```{r  variable_edit, include=TRUE}
-data <- data_imp %>% 
-        mutate(num_student = sum(grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
-                                 grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
-                                 grade7_b + grade7_g + grade8_b + grade8_g),
-               stu_pop     = num_student/tot_p*100,
-               )
 write.csv(data, "data.csv")
 ```
 
