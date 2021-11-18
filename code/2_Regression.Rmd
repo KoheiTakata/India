@@ -9,8 +9,10 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("magrittr")
 #install.packages("tensorflow")
 #install.packages("HDCI")
-
-
+#install.packages("tidyverse")
+#install.packages("sringr")
+#install.packages(foreach)
+library(foreach)
 library(glmnet)
 library(MLmetrics)
 library(neuralnet)
@@ -20,11 +22,9 @@ library(magrittr)
 library(tensorflow)
 library(HDCI)
 library(reticulate)
-library(tidyverse)
-
-
+library(stringr)
+library(dplyr)
 reticulate::py_discover_config()
-
 ```
 
 
@@ -35,29 +35,17 @@ data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") 
                              grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
                              grade7_b + grade7_g + grade8_b + grade8_g,
                stu_pop     = num_student/tot_p*100)
+#write.csv(data, "data.csv")
 
-write.csv(data, "data.csv")
-
-
-```
-
-```{r adding_variable, include=TRUE}
-data <- data_imp %>% 
-        mutate(num_student = sum(grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
-                                 grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
-                                 grade7_b + grade7_g + grade8_b + grade8_g),
-               stu_pop     = num_student/tot_p*100)
-write.csv(data, "data.csv")
+District_list  <- unique(data$District)
 
 ```
+
 
 ## 5. Regression
 ```{r regression_function, include=TRUE}
-District_list  <- unique(data$District)
 MSE_table      <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1)
-
 model          <- lm(oos_g_5to14 ~ ASER + numschools, data = data)
-
 MSE_func <- function(model, data){
             for(i in 1:14){
             training       <- data %>% 
@@ -73,7 +61,6 @@ MSE_func <- function(model, data){
             MSE_table[15,1]<- mean(MSE_table[1:14,1])
             return(list(result <- summary(model_1), MSE <- MSE_table))
 }
-
 ```
 
 
@@ -82,16 +69,13 @@ MSE_func <- function(model, data){
 ```{r long, include=TRUE}
 f_long_rhs  <- str_c(colnames(data)[11:ncol(data)], collapse = " + ")
 f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
-
 model_long  <- lm(f_long_c, data = data)
 result_long <- MSE_func(model_long, data)
-
 result_long[[2]]
 write.csv(result_long[[2]], "result_long.csv")
 ```
 
 ```{r lasso, include=TRUE}
-
 MSE_table     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
 i = 1
 ## for loop
@@ -128,61 +112,69 @@ for(i in 1:14){
     
           
   MSE_table[i,1] <- MSE(pred, y_hold)
+  print(MSE_table[i,1])
 }
  MSE_table[15,1]<- mean(MSE_table[1:14,1])
  MSE_table
  
- write.csv(MSE_table, "result_LASSO.csv")
+# write.csv(MSE_table, "result_LASSO.csv")
 ```
 
-```{r LMG, include = TRUE}
-cv_model
-
-```
 
 ```{r regression_2, include= TRUE}
 ## put all variables you want
-model <- lm(oos_g_5to14 ~ ASER + numschools + tot_g , data = data)
-
+model   <- lm(oos_g_5to14 ~ ASER + numschools + tot_g , data = data)
 model_1 <- MSE_func(model, data)
-
 model_1
-
 model   <- lm(oos_g_5to14 ~ ASER + numschools + tot_g + kitshed_avail, data = data)
-
 model_2 <- MSE_func(model, data)
-
 model_2
-
 ```
 
 ```{r Random_Forest, include=TRUE}
 #install.packages("randomForest")
 #install.packages("caret")
-install.packages("doParallel")
+#install.packages("parallel")
+#install.packages("doParallel")
+#install.packages("ggplot2")
+library(parallel)
 library(doParallel)
 library(caret)
 library(randomForest)
-set.seed(02138)
+library(ggplot2)
+no_cores <- detectCores() - 1
 
-MSE_table     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
-cl<-makePSOCKcluster(8)
+set.seed(02138)
+MSE_table_RF     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
 
 i =1
 for(i in 1:14){
   training          <- data %>% 
-                       filter(District != District_list[i])
-  holdout           <- data %>% 
-                       filter(District == District_list[i])
+                       filter(District != District_list[i]) %>% 
+                       select(colnames(data)[10: ncol(data)])
   
-  registerDoParallel(cl)
-
-  model_RF <-train(oos_g_5to14~., data=training, method='rf')
-
-  #model_RF          <- randomForest(oos_g_5to14~., data= training, importance = TRUE)
-
+  holdout           <- data %>% 
+                       filter(District == District_list[i]) %>% 
+                       select(colnames(data)[10: ncol(data)])
+  
+  cl <- makePSOCKcluster(no_cores)
+    start.time<-proc.time()
+  
+    registerDoParallel(cl)
+    model_RF <-train(oos_g_5to14~., data=training, method='rf')
+    #model_RF          <- randomForest(oos_g_5to14~., data= training, subset = c(1:2000), importance = TRUE)
+  
+    stop.time<-proc.time()
+    
+    run.time<-stop.time -start.time
+    
+    print(run.time)
+    
+    stopCluster(cl)
+    
   pred_RF           <- predict(model_RF, newdata=holdout)
   MSE_table_RF[i,1] <- mean((pred_RF-holdout$oos_g_5to14)^2)
+  print(MSE_table_RF[i,1])
 }
 
 plot(pred_RF, holdout$oos_g_5to14)
@@ -191,7 +183,6 @@ abline(0,1)
 
 ```{r NN, include=TRUE}
 MSE_table_NN     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
-
 i = 4
 ## for loop
 for(i in 1:14){
@@ -250,19 +241,15 @@ for(i in 1:14){
   pred <- model %>% predict(x_hold_std)
  
   MSE_table_NN[i,1] <- mean((y_hold-pred)^2) 
-
   MSE_table_NN[i,1]
 }
  MSE_table_NN[15,1]<- mean(MSE_table_NN[1:14,1])
  MSE_table_NN
-
  write.csv(MSE_table_NN, "result_NN.csv")
-
 ```
 
 
 ```{r Udaipur, include = TRUE}
-
   training   <- data %>% 
                 filter(District != "UDAIPUR")
   holdout    <- data %>% 
@@ -297,13 +284,8 @@ for(i in 1:14){
           rename(pred = lambda.min) %>% 
           mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
           as.matrix()
-
-
 plot(x = oosg_udai, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
-
-
 #write.csv(pred, "oosg_udai.csv")
-
 ```
 
 ```{r confidence_interval, include=TRUE}
@@ -319,7 +301,6 @@ for (i in 1:B) {
   pred[,i]  <- predict(cv_model, newx = x_hold, s="lambda.min")
   print(i)
 }
-
 #write.csv(pred, "pred.csv")
 CI <- pred %>% 
       t() %>% 
@@ -333,8 +314,6 @@ CI <- pred %>%
       select( c(4, 5, 3, 1, 2)) %>% 
        `colnames<-`(c("lower", "upper", "mean", "Block", "District"))
 #write.csv(CI, "udai_CI.csv")
-
-
 ```
 
 
@@ -345,15 +324,11 @@ CI <- pred %>%
 
 ```{r re}
 #install.packages("relaimpo")
-
 library(relaimpo) #For calculating relative importance of each variables
 f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
 f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
-
 data_rel <- data[, c("oos_g_5to14",coef_lasso[,1])]
 relative_imp <- calc.relimp(f_long_c,data=data_rel,
                    type = c("lmg"), rela = TRUE, na.omit=TRUE )
-
 relative_imp
-
 ```
