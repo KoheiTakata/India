@@ -1,0 +1,110 @@
+
+```{r setup, include = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("glmnet")
+#install.packages("MLmetrics")
+#install.packages("neuralnet")
+#install.packages("keras")
+#install.packages("mlbench")
+#install.packages("magrittr")
+#install.packages("tensorflow")
+#install.packages("HDCI")
+#install.packages("tidyverse")
+#install.packages("sringr")
+#install.packages(foreach)
+library(foreach)
+library(glmnet)
+library(MLmetrics)
+library(neuralnet)
+library(keras)
+library(mlbench)
+library(magrittr)
+library(tensorflow)
+library(HDCI)
+library(reticulate)
+library(stringr)
+library(dplyr)
+reticulate::py_discover_config()
+```
+
+
+```{r data_import, include = TRUE}
+data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") %>% 
+        select(-X) %>% 
+        mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
+                             grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
+                             grade7_b + grade7_g + grade8_b + grade8_g,
+               stu_pop     = num_student/tot_p*100)
+#write.csv(data, "data.csv")
+
+District_list  <- unique(data$District)
+
+```
+
+
+```{r NN, include=TRUE}
+MSE_table_NN     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
+i = 4
+## for loop
+for(i in 1:14){
+  training   <- data %>% 
+                filter(District != District_list[i])
+  
+  holdout    <- data %>% 
+                filter(District == District_list[i]) 
+  
+  y_train <- training$oos_g_5to14 %>% 
+             as.matrix()
+  
+  x_train <- training %>% 
+             select(colnames(data)[11:ncol(data)]) %>% 
+             as.matrix()
+  
+  ## holdout
+  y_hold <- holdout$oos_g_5to14 %>% 
+            as.matrix()
+  
+  x_hold <- holdout %>% 
+            select(colnames(data)[11:ncol(data)]) %>% 
+            as.matrix()
+  
+  
+  m <- colMeans(x_train)
+  s <- apply(x_train, 2, sd)
+  x_train_std <- scale(x_train, center = m, scale = s)
+  x_hold_std  <- scale(x_hold,  center = m, scale = s)
+  
+  ## NN
+  model <- keras_model_sequential()
+  #model %>%
+  #       layer_dense(units = 5, activation = 'relu', input_shape = c(339)) %>%
+  #       layer_dense(units = 1)
+  model %>%
+        layer_dense(units = 10, activation = 'relu', input_shape = c(341)) %>%
+        layer_dropout(rate=0.50)  %>%
+        layer_dense(units = 5, activation = 'relu')  %>%
+        layer_dropout(rate=0.2)  %>%
+         layer_dense(units = 1)
+  
+  model %>% compile(loss      = 'mse',
+                    optimizer = 'rmsprop', 
+                    metrics   = 'mae') 
+  
+  
+  mymodel <- model %>%          
+              fit(x_train_std, y_train,
+                  epochs = 100,
+                  batch_size = 32,
+                  validation_split = 0.2)
+  
+  model %>%
+    evaluate(x_hold_std, y_hold)
+  pred <- model %>% predict(x_hold_std)
+ 
+  MSE_table_NN[i,1] <- mean((y_hold-pred)^2) 
+  MSE_table_NN[i,1]
+}
+ MSE_table_NN[15,1]<- mean(MSE_table_NN[1:14,1])
+ MSE_table_NN
+ write.csv(MSE_table_NN, "result_NN.csv")
+```

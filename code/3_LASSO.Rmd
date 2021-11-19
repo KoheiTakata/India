@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("tidyverse")
 #install.packages("sringr")
 #install.packages(foreach)
+#install.packages("needs")
 library(foreach)
 library(glmnet)
 library(MLmetrics)
@@ -25,9 +26,11 @@ library(stringr)
 library(parallel)
 library(doParallel)
 library(tidyverse)
-no_cores <- detectCores() - 1
-cl <- makePSOCKcluster(no_cores)
-registerDoParallel(cl)
+library(needs)
+library(caret)
+
+prioritize(dplyr)
+
 
 set.seed(02138)
 reticulate::py_discover_config()
@@ -39,8 +42,8 @@ data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") 
         mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
                              grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
                              grade7_b + grade7_g + grade8_b + grade8_g,
-               stu_pop     = num_student/tot_p*100)
-#write.csv(data, "data.csv")
+               stu_pop     = num_student/tot_p*100) 
+  #write.csv(data, "data.csv")
 
 District_list  <- unique(data$District)
 
@@ -132,60 +135,33 @@ plot(x = pred, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
 ```
 
 
-```{r confidence_interval, include=TRUE}
-B <- 500
+```{r confidence, include=TRUE}
+no_cores <- detectCores() - 1
+cl <- makePSOCKcluster(no_cores)
 
-pred <- array(data = NA, dim = c(nrow(holdout),B))
-for (i in 1:B) {
-  boot <- sample(nrow(x_train), nrow(x_train), replace = TRUE)
-  
-  x_train_boot <- x_train[boot,]
-  y_train_boot <- y_train[boot,]
-  
-  cv_model  <- cv.glmnet(x = x_train_boot, y = y_train_boot)
-  pred[,i]  <- predict(cv_model, newx = x_hold, s="lambda.min")
-  print(i)
-}
-#write.csv(pred, "pred.csv")
-CI <- pred %>% 
-      t() %>% 
-      as.data.frame() %>% 
-      summarize(across(.cols = everything(), list( ~ quantile(., c(0.025, 0.975))))) %>% 
-      t() %>% 
-      as.data.frame() %>% 
-      cbind(oosg_udai) %>%
-      cbind(holdout$Block) %>% 
-      cbind(holdout$District) %>%
-      select( c(4, 5, 3, 1, 2)) %>% 
-       `colnames<-`(c("lower", "upper", "mean", "Block", "District"))
-#write.csv(CI, "udai_CI.csv")
-```
-
-
-
-```{r loop, include=TRUE}
-unregister_dopar <- function() {
-  env <- foreach:::.foreachGlobals
-  rm(list=ls(name=env), pos=env)
-}
-library(foreach)
 B <- 10
 
 pred <- array(data = NA, dim = c(nrow(holdout),B))
 
 registerDoParallel(cl)
 
-foreach(i = 1:B, .packages='glmnet') %dopar% {
-  boot <- sample(nrow(x_train), nrow(x_train), replace = TRUE)
+start.time<-proc.time()
+pred <-  foreach(i = 1:B, .packages='glmnet', .combine='cbind') %dopar% {
+         boot <- sample(nrow(x_train), nrow(x_train), replace = TRUE)
   
-  x_train_boot <- x_train[boot,]
-  y_train_boot <- y_train[boot,]
-  
-  cv_model  <- cv.glmnet(x = x_train_boot, y = y_train_boot)
-  pred[,i]  <- predict(cv_model, newx = x_hold, s="lambda.min")
-  #print(i)
+          x_train_boot <- x_train[boot,]
+          y_train_boot <- y_train[boot,]
+          
+          cv_model  <- cv.glmnet(x = x_train_boot, y = y_train_boot)
+          predict(cv_model, newx = x_hold, s="lambda.min")
 }
 stopCluster(cl)
+
+    stop.time<-proc.time()
+    
+    run.time<-stop.time -start.time
+    
+    print(run.time)
 
 #write.csv(pred, "pred.csv")
 CI <- pred %>% 
@@ -206,23 +182,30 @@ CI <- pred %>%
 
 
 
-
-
-
-
-
-
-
-
-
-
 ```{r re}
 #install.packages("relaimpo")
-library(relaimpo) #For calculating relative importance of each variables
-f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
-f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
-data_rel <- data[, c("oos_g_5to14",coef_lasso[,1])]
-relative_imp <- calc.relimp(f_long_c,data=data_rel,
-                   type = c("lmg"), rela = TRUE, na.omit=TRUE )
-relative_imp
+#library(relaimpo) #For calculating relative importance of each variables
+#f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
+#f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
+#data_rel <- data[, c("oos_g_5to14",coef_lasso[,1])]
+
+#relative_imp <- calc.relimp(f_long_c,data=data_rel,
+#                   type = c("lmg"), rela = TRUE)
+
+#relative_imp
+  training   <- data %>% 
+                filter(District != "UDAIPUR") %>% 
+                select(c("oos_g_5to14",coef_lasso[,1]))
+  holdout    <- data %>% 
+                filter(District == "UDAIPUR")
+
+registerDoParallel(cl)
+
+ols_model <- train(f_long_c, data = training, method = "lm")
+
+stopCluster(cl)
+
+
+varImp()
+
 ```
