@@ -126,11 +126,11 @@ for(i in 1:14){
                 dplyr::select(name) %>%
                 as.matrix()
   
-  pred <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
+  mean <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
           rename(pred = lambda.min) %>% 
           mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
           as.matrix()
-plot(x = pred, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
+plot(x = mean, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
 #write.csv(pred, "oosg_udai.csv")
 ```
 
@@ -139,9 +139,8 @@ plot(x = pred, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
 no_cores <- detectCores() - 1
 cl <- makePSOCKcluster(no_cores)
 
-B <- 10
+B <- 1000
 
-pred <- array(data = NA, dim = c(nrow(holdout),B))
 
 registerDoParallel(cl)
 
@@ -164,48 +163,53 @@ stopCluster(cl)
     print(run.time)
 
 #write.csv(pred, "pred.csv")
-CI <- pred %>% 
+CI <- pred%>% 
       t() %>% 
       as.data.frame() %>% 
       summarize(across(.cols = everything(), list( ~ quantile(., c(0.025, 0.975))))) %>% 
       t() %>% 
       as.data.frame() %>% 
-      cbind(oosg_udai) %>%
-      cbind(holdout$Block) %>% 
+      cbind(mean) %>%
+      cbind(holdout$Village) %>% 
       cbind(holdout$District) %>%
       select( c(4, 5, 3, 1, 2)) %>% 
-       `colnames<-`(c("lower", "upper", "mean", "Block", "District"))
-#write.csv(CI, "udai_CI.csv")
+       `colnames<-`(c( "District","Village", "mean","upper" ,"lower"))
 
+
+#write.csv(CI, "C:/Users/tkthe/Github/India/output/Udai_CI.csv"")
 
 ```
 
 
 
-```{r re}
-#install.packages("relaimpo")
-#library(relaimpo) #For calculating relative importance of each variables
-#f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
-#f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
-#data_rel <- data[, c("oos_g_5to14",coef_lasso[,1])]
+```{r importance, include = TRUE}
+no_cores <- detectCores() - 1
+cl <- makePSOCKcluster(no_cores)
 
-#relative_imp <- calc.relimp(f_long_c,data=data_rel,
-#                   type = c("lmg"), rela = TRUE)
-
-#relative_imp
   training   <- data %>% 
                 filter(District != "UDAIPUR") %>% 
                 select(c("oos_g_5to14",coef_lasso[,1]))
   holdout    <- data %>% 
-                filter(District == "UDAIPUR")
+                filter(District == "UDAIPUR") %>% 
+                select(c("oos_g_5to14",coef_lasso[,1]))
+  
+  f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
+  f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
+
 
 registerDoParallel(cl)
 
 ols_model <- train(f_long_c, data = training, method = "lm")
-
 stopCluster(cl)
 
+var_list  <- varImp(ols_model, scale = TRUE)
+Imp_list  <- data.frame(cbind(coef_lasso[,1],
+                        var_list$importance$Overall)) %>%
+             mutate(X2 = as.numeric(X2)) %>% 
+             rename(Var = X1,
+                    Importance = X2) %>% 
+             arrange(desc(Importance))
 
-varImp()
+#write.csv(Imp_list, "C:/Users/tkthe/Github/India/output/Imp_list.csv")
 
 ```
