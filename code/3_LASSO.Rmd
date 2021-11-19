@@ -1,0 +1,228 @@
+```{r setup, include = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("glmnet")
+#install.packages("MLmetrics")
+#install.packages("neuralnet")
+#install.packages("keras")
+#install.packages("mlbench")
+#install.packages("magrittr")
+#install.packages("tensorflow")
+#install.packages("HDCI")
+#install.packages("tidyverse")
+#install.packages("sringr")
+#install.packages(foreach)
+library(foreach)
+library(glmnet)
+library(MLmetrics)
+library(neuralnet)
+library(keras)
+library(mlbench)
+library(magrittr)
+library(tensorflow)
+library(HDCI)
+library(reticulate)
+library(stringr)
+library(parallel)
+library(doParallel)
+library(tidyverse)
+no_cores <- detectCores() - 1
+cl <- makePSOCKcluster(no_cores)
+registerDoParallel(cl)
+
+set.seed(02138)
+reticulate::py_discover_config()
+```
+
+```{r data_import, include = TRUE}
+data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") %>% 
+        select(-X) %>% 
+        mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
+                             grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
+                             grade7_b + grade7_g + grade8_b + grade8_g,
+               stu_pop     = num_student/tot_p*100)
+#write.csv(data, "data.csv")
+
+District_list  <- unique(data$District)
+
+```
+
+```{r lasso, include=TRUE}
+MSE_table     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
+i = 1
+## for loop
+for(i in 1:14){
+  training   <- data %>% 
+                filter(District != District_list[i])
+  holdout    <- data %>% 
+                filter(District == District_list[i])
+  
+  ## training
+  y_train <- training$oos_g_5to14 %>% 
+             as.matrix()
+  x_train <- training %>% 
+             select(colnames(data)[11:ncol(data)]) %>% 
+             as.matrix()
+  
+  ## holdout
+  y_hold <- holdout$oos_g_5to14 %>% 
+            as.matrix()
+  
+  x_hold <- holdout %>% 
+            select(colnames(data)[11:ncol(data)]) %>% 
+            as.matrix()
+  
+  ## LASSO
+  cv_model <- cv.glmnet(x = x_train, y = y_train)
+  #summary(cv_model)
+  #plot(cv_model)
+  #coef_lasso <- enframe(coef(cv_model, s="lambda.min")[,1])
+  pred <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
+          rename(pred = lambda.min) %>% 
+          mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
+          as.matrix()
+    
+          
+  MSE_table[i,1] <- MSE(pred, y_hold)
+  print(MSE_table[i,1])
+}
+ MSE_table[15,1]<- mean(MSE_table[1:14,1])
+ MSE_table
+ 
+# write.csv(MSE_table, "result_LASSO.csv")
+```
+
+
+```{r Udaipur, include = TRUE}
+  training   <- data %>% 
+                filter(District != "UDAIPUR")
+  holdout    <- data %>% 
+                filter(District == "UDAIPUR")
+  
+  ## training
+  y_train <- training$oos_g_5to14 %>% 
+             as.matrix()
+  x_train <- training %>% 
+             dplyr::select(colnames(data)[11:ncol(data)]) %>% 
+             as.matrix()
+  
+  ## holdout
+  y_hold <- holdout$oos_g_5to14 %>% 
+            as.matrix()
+  
+  x_hold <- holdout %>% 
+            dplyr::select(colnames(data)[11:ncol(data)]) %>% 
+            as.matrix()
+  
+  ## LASSO
+  cv_model <- cv.glmnet(x = x_train, y = y_train)
+  summary(cv_model)
+  #plot(cv_model)
+  coef_lasso <- enframe(coef(cv_model, s="lambda.min")[,1]) %>% 
+                filter(value != 0,
+                       name != "(Intercept)") %>% 
+                dplyr::select(name) %>%
+                as.matrix()
+  
+  pred <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
+          rename(pred = lambda.min) %>% 
+          mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
+          as.matrix()
+plot(x = pred, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
+#write.csv(pred, "oosg_udai.csv")
+```
+
+
+```{r confidence_interval, include=TRUE}
+B <- 500
+
+pred <- array(data = NA, dim = c(nrow(holdout),B))
+for (i in 1:B) {
+  boot <- sample(nrow(x_train), nrow(x_train), replace = TRUE)
+  
+  x_train_boot <- x_train[boot,]
+  y_train_boot <- y_train[boot,]
+  
+  cv_model  <- cv.glmnet(x = x_train_boot, y = y_train_boot)
+  pred[,i]  <- predict(cv_model, newx = x_hold, s="lambda.min")
+  print(i)
+}
+#write.csv(pred, "pred.csv")
+CI <- pred %>% 
+      t() %>% 
+      as.data.frame() %>% 
+      summarize(across(.cols = everything(), list( ~ quantile(., c(0.025, 0.975))))) %>% 
+      t() %>% 
+      as.data.frame() %>% 
+      cbind(oosg_udai) %>%
+      cbind(holdout$Block) %>% 
+      cbind(holdout$District) %>%
+      select( c(4, 5, 3, 1, 2)) %>% 
+       `colnames<-`(c("lower", "upper", "mean", "Block", "District"))
+#write.csv(CI, "udai_CI.csv")
+```
+
+
+
+```{r loop, include=TRUE}
+unregister_dopar <- function() {
+  env <- foreach:::.foreachGlobals
+  rm(list=ls(name=env), pos=env)
+}
+library(foreach)
+B <- 10
+
+pred <- array(data = NA, dim = c(nrow(holdout),B))
+
+registerDoParallel(cl)
+
+foreach(i = 1:B, .packages='glmnet') %dopar% {
+  boot <- sample(nrow(x_train), nrow(x_train), replace = TRUE)
+  
+  x_train_boot <- x_train[boot,]
+  y_train_boot <- y_train[boot,]
+  
+  cv_model  <- cv.glmnet(x = x_train_boot, y = y_train_boot)
+  pred[,i]  <- predict(cv_model, newx = x_hold, s="lambda.min")
+  #print(i)
+}
+stopCluster(cl)
+
+#write.csv(pred, "pred.csv")
+CI <- pred %>% 
+      t() %>% 
+      as.data.frame() %>% 
+      summarize(across(.cols = everything(), list( ~ quantile(., c(0.025, 0.975))))) %>% 
+      t() %>% 
+      as.data.frame() %>% 
+      cbind(oosg_udai) %>%
+      cbind(holdout$Block) %>% 
+      cbind(holdout$District) %>%
+      select( c(4, 5, 3, 1, 2)) %>% 
+       `colnames<-`(c("lower", "upper", "mean", "Block", "District"))
+#write.csv(CI, "udai_CI.csv")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r re}
+#install.packages("relaimpo")
+library(relaimpo) #For calculating relative importance of each variables
+f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
+f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
+data_rel <- data[, c("oos_g_5to14",coef_lasso[,1])]
+relative_imp <- calc.relimp(f_long_c,data=data_rel,
+                   type = c("lmg"), rela = TRUE, na.omit=TRUE )
+relative_imp
+```

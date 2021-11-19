@@ -75,50 +75,6 @@ result_long[[2]]
 write.csv(result_long[[2]], "result_long.csv")
 ```
 
-```{r lasso, include=TRUE}
-MSE_table     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
-i = 1
-## for loop
-for(i in 1:14){
-  training   <- data %>% 
-                filter(District != District_list[i])
-  holdout    <- data %>% 
-                filter(District == District_list[i])
-  
-  ## training
-  y_train <- training$oos_g_5to14 %>% 
-             as.matrix()
-  x_train <- training %>% 
-             select(colnames(data)[11:ncol(data)]) %>% 
-             as.matrix()
-  
-  ## holdout
-  y_hold <- holdout$oos_g_5to14 %>% 
-            as.matrix()
-  
-  x_hold <- holdout %>% 
-            select(colnames(data)[11:ncol(data)]) %>% 
-            as.matrix()
-  
-  ## LASSO
-  cv_model <- cv.glmnet(x = x_train, y = y_train)
-  #summary(cv_model)
-  #plot(cv_model)
-  #coef_lasso <- enframe(coef(cv_model, s="lambda.min")[,1])
-  pred <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
-          rename(pred = lambda.min) %>% 
-          mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
-          as.matrix()
-    
-          
-  MSE_table[i,1] <- MSE(pred, y_hold)
-  print(MSE_table[i,1])
-}
- MSE_table[15,1]<- mean(MSE_table[1:14,1])
- MSE_table
- 
-# write.csv(MSE_table, "result_LASSO.csv")
-```
 
 
 ```{r regression_2, include= TRUE}
@@ -173,7 +129,6 @@ for(i in 1:14){
     stopCluster(cl)
     
   pred_RF           <- predict(model_RF, newdata=holdout)
-  MSE_table_RF[i,1] <- mean((pred_RF-holdout$oos_g_5to14)^2)
   print(MSE_table_RF[i,1])
 }
 
@@ -249,86 +204,3 @@ for(i in 1:14){
 ```
 
 
-```{r Udaipur, include = TRUE}
-  training   <- data %>% 
-                filter(District != "UDAIPUR")
-  holdout    <- data %>% 
-                filter(District == "UDAIPUR")
-  
-  ## training
-  y_train <- training$oos_g_5to14 %>% 
-             as.matrix()
-  x_train <- training %>% 
-             dplyr::select(colnames(data)[11:ncol(data)]) %>% 
-             as.matrix()
-  
-  ## holdout
-  y_hold <- holdout$oos_g_5to14 %>% 
-            as.matrix()
-  
-  x_hold <- holdout %>% 
-            dplyr::select(colnames(data)[11:ncol(data)]) %>% 
-            as.matrix()
-  
-  ## LASSO
-  cv_model <- cv.glmnet(x = x_train, y = y_train)
-  summary(cv_model)
-  #plot(cv_model)
-  coef_lasso <- enframe(coef(cv_model, s="lambda.min")[,1]) %>% 
-                filter(value != 0,
-                       name != "(Intercept)") %>% 
-                dplyr::select(name) %>%
-                as.matrix()
-  
-  pred <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
-          rename(pred = lambda.min) %>% 
-          mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
-          as.matrix()
-plot(x = oosg_udai, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
-#write.csv(pred, "oosg_udai.csv")
-```
-
-```{r confidence_interval, include=TRUE}
-B <- 100
-pred <- array(data = NA, dim = c(nrow(holdout),B))
-for (i in 1:B) {
-  boot <- sample(nrow(x_train), nrow(x_train), replace = TRUE)
-  
-  x_train_boot <- x_train[boot,]
-  y_train_boot <- y_train[boot,]
-  
-  cv_model  <- cv.glmnet(x = x_train_boot, y = y_train_boot)
-  pred[,i]  <- predict(cv_model, newx = x_hold, s="lambda.min")
-  print(i)
-}
-#write.csv(pred, "pred.csv")
-CI <- pred %>% 
-      t() %>% 
-      as.data.frame() %>% 
-      summarize(across(.cols = everything(), list( ~ quantile(., c(0.025, 0.975))))) %>% 
-      t() %>% 
-      as.data.frame() %>% 
-      cbind(oosg_udai) %>%
-      cbind(holdout$Block) %>% 
-      cbind(holdout$District) %>%
-      select( c(4, 5, 3, 1, 2)) %>% 
-       `colnames<-`(c("lower", "upper", "mean", "Block", "District"))
-#write.csv(CI, "udai_CI.csv")
-```
-
-
-
-
-
-
-
-```{r re}
-#install.packages("relaimpo")
-library(relaimpo) #For calculating relative importance of each variables
-f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
-f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
-data_rel <- data[, c("oos_g_5to14",coef_lasso[,1])]
-relative_imp <- calc.relimp(f_long_c,data=data_rel,
-                   type = c("lmg"), rela = TRUE, na.omit=TRUE )
-relative_imp
-```
