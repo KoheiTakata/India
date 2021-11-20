@@ -31,9 +31,7 @@ library(caret)
 library(parallel)
 library(doParallel)
 library(randomForest)
-
 prioritize(dplyr)
-
 set.seed(02138)
 reticulate::py_discover_config()
 ```
@@ -46,9 +44,7 @@ data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") 
                              grade7_b + grade7_g + grade8_b + grade8_g,
                stu_pop     = num_student/tot_p*100) 
   #write.csv(data, "data.csv")
-
 District_list  <- unique(data$District)
-
 ```
 
 ```{r XGBoost, include=TRUE}
@@ -58,14 +54,11 @@ District_list  <- unique(data$District)
 #install.packages("doParallel")
 #install.packages("ggplot2")
 no_cores <- detectCores() - 1
-
 set.seed(02138)
 MSE_table_RG     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
-
 i =1
 for(i in 1:14){
   
-
   training          <- data %>% 
                        filter(District != District_list[i]) %>% 
                        select(colnames(data)[10: ncol(data)])
@@ -90,21 +83,16 @@ for(i in 1:14){
   x_hold <- holdout %>% 
             select(colnames(data)[11:ncol(data)]) %>% 
             as.matrix()
-
   
   cl <- makePSOCKcluster(no_cores)
     start.time<-proc.time()
   
     registerDoParallel(cl)
-
-
     lambda <- 10^seq(-3, 3, length = 100)
     
     model_RG <- caret::train(oos_g_5to14~., data=training, method = "glmnet",
                              trControl = trainControl("cv", number = 10),
                              tuneGrid = expand.grid(alpha = 0, lambda = lambda))
-
-
     stop.time<-proc.time()
     
     run.time<-stop.time -start.time
@@ -120,17 +108,128 @@ for(i in 1:14){
   MSE_table_RG[i,1] <- MSE(pred_RG, holdout$oos_g_5to14)
   print(MSE_table_RG[i,1])
 }
-
 MSE_table_RG[15,1] <- mean(MSE_table_RG[1:14,1])
  MSE_table_RG
-
 plot(pred_RG, holdout$oos_g_5to14)
-
-
 ```
 
 
 
 
+
+```{r Udaipur, include = TRUE}
+  training   <- data %>% 
+                filter(District != "UDAIPUR") %>% 
+                select(colnames(data)[10: ncol(data)])
+
+  holdout    <- data %>% 
+                filter(District == "UDAIPUR") %>% 
+                select(colnames(data)[10: ncol(data)])
+  
+  ## training
+  y_train <- training$oos_g_5to14 %>% 
+             as.matrix()
+  x_train <- training %>% 
+             dplyr::select(colnames(data)[11:ncol(data)]) %>% 
+             as.matrix()
+  
+  ## holdout
+  y_hold <- holdout$oos_g_5to14 %>% 
+            as.matrix()
+  
+  x_hold <- holdout %>% 
+            dplyr::select(colnames(data)[11:ncol(data)]) %>% 
+            as.matrix()
+  
+ cl <- makePSOCKcluster(no_cores)
+    start.time<-proc.time()
+  
+    registerDoParallel(cl)
+    lambda <- 10^seq(-3, 3, length = 100)
+    
+    model_RG <- caret::train(oos_g_5to14~., data=training, method = "glmnet",
+                             trControl = trainControl("cv", number = 10),
+                             tuneGrid = expand.grid(alpha = 0, lambda = lambda))
+    stop.time<-proc.time()
+    
+    run.time<-stop.time -start.time
+    
+    print(run.time)
+    
+    stopCluster(cl)
+    
+  
+  pred_RG <- data.frame(pred = predict(model_RG, newdata=holdout)) %>%
+              mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
+              as.matrix()
+plot(x = pred_RG, y = holdout$oos_g_5to14, xlim = c(0, 3), ylim = c(0, 2))
+#write.csv(pred_RG, "oosg_udai_RG.csv")
 ```
 
+
+```{r confidence, include=TRUE}
+no_cores <- detectCores() - 1
+cl <- makePSOCKcluster(no_cores)
+B <- 1000
+registerDoParallel(cl)
+start.time<-proc.time()
+pred <-  foreach(i = 1:B, .packages='caret', .combine='cbind') %dopar% {
+         boot <- sample(nrow(training), nrow(training), replace = TRUE)
+  
+          training_boot <- training[boot,]
+
+          lambda <- 10^seq(-3, 3, length = 100)
+    
+          model_RG <- caret::train(oos_g_5to14~., data=training_boot, method = "glmnet",
+                             trControl = trainControl("cv", number = 10),
+                             tuneGrid = expand.grid(alpha = 0, lambda = lambda))
+          
+          predict(model_RG, newx = holdout, s="lambda.min")
+}
+stopCluster(cl)
+    stop.time<-proc.time()
+    
+    run.time<-stop.time -start.time
+    
+    print(run.time)
+#write.csv(pred, "pred.csv")
+CI <- pred%>% 
+      t() %>% 
+      as.data.frame() %>% 
+      summarize(across(.cols = everything(), list( ~ quantile(., c(0.025, 0.975))))) %>% 
+      t() %>% 
+      as.data.frame() %>% 
+      cbind(mean) %>%
+      cbind(holdout$Village) %>% 
+      cbind(holdout$District) %>%
+      select( c(4, 5, 3, 1, 2)) %>% 
+       `colnames<-`(c( "District","Village", "mean","upper" ,"lower"))
+#write.csv(CI, "C:/Users/tkthe/Github/India/output/Udai_CI.csv"")
+```
+
+
+
+```{r importance, include = TRUE}
+no_cores <- detectCores() - 1
+cl <- makePSOCKcluster(no_cores)
+  training   <- data %>% 
+                filter(District != "UDAIPUR") %>% 
+                select(c("oos_g_5to14",coef_lasso[,1]))
+  holdout    <- data %>% 
+                filter(District == "UDAIPUR") %>% 
+                select(c("oos_g_5to14",coef_lasso[,1]))
+  
+  f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
+  f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
+registerDoParallel(cl)
+ols_model <- train(f_long_c, data = training, method = "lm")
+stopCluster(cl)
+var_list  <- varImp(ols_model, scale = TRUE)
+Imp_list  <- data.frame(cbind(coef_lasso[,1],
+                        var_list$importance$Overall)) %>%
+             mutate(X2 = as.numeric(X2)) %>% 
+             rename(Var = X1,
+                    Importance = X2) %>% 
+             arrange(desc(Importance))
+#write.csv(Imp_list, "C:/Users/tkthe/Github/India/output/Imp_list.csv")
+```
