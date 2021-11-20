@@ -1,0 +1,126 @@
+```{r setup, include = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("glmnet")
+#install.packages("MLmetrics")
+#install.packages("neuralnet")
+#install.packages("keras")
+#install.packages("mlbench")
+#install.packages("magrittr")
+#install.packages("tensorflow")
+#install.packages("HDCI")
+#install.packages("tidyverse")
+#install.packages("sringr")
+#install.packages(foreach)
+#install.packages("needs")
+library(foreach)
+library(glmnet)
+library(MLmetrics)
+library(neuralnet)
+library(keras)
+library(mlbench)
+library(magrittr)
+library(tensorflow)
+library(HDCI)
+library(reticulate)
+library(stringr)
+library(parallel)
+library(doParallel)
+library(tidyverse)
+library(needs)
+library(caret)
+library(parallel)
+library(doParallel)
+library(randomForest)
+
+prioritize(dplyr)
+
+set.seed(02138)
+reticulate::py_discover_config()
+```
+
+```{r data_import, include = TRUE}
+data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") %>% 
+        select(-X) %>% 
+        mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
+                             grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
+                             grade7_b + grade7_g + grade8_b + grade8_g,
+               stu_pop     = num_student/tot_p*100) 
+  #write.csv(data, "data.csv")
+
+District_list  <- unique(data$District)
+
+```
+
+```{r brnn, include=TRUE}
+#install.packages("randomForest")
+#install.packages("caret")
+#install.packages("parallel")
+#install.packages("doParallel")
+#install.packages("ggplot2")
+no_cores <- detectCores() - 1
+
+set.seed(02138)
+MSE_table_br     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
+
+i =1
+for(i in 1:14){
+  
+
+  training          <- data %>% 
+                       filter(District != District_list[i]) %>% 
+                       select(colnames(data)[10: ncol(data)])
+  
+  holdout           <- data %>% 
+                       filter(District == District_list[i]) %>% 
+                       select(colnames(data)[10: ncol(data)])
+  
+  y_train <- training$oos_g_5to14 %>% 
+             as.matrix()
+  
+  x_train <- training %>% 
+             select(colnames(data)[11:ncol(data)]) %>% 
+             as.matrix()
+  preProcess_range_model <- preProcess(x_train, method='range')
+  trainData <- predict(preProcess_range_model, newdata = x_train)
+  
+  ## holdout
+  y_hold <- holdout$oos_g_5to14 %>% 
+            as.matrix()
+  
+  x_hold <- holdout %>% 
+            select(colnames(data)[11:ncol(data)]) %>% 
+            as.matrix()
+
+  
+  cl <- makePSOCKcluster(no_cores)
+    start.time<-proc.time()
+  
+    registerDoParallel(cl)
+
+    xgb_base <- caret::train(
+                x = x_train,
+                y = y_train,
+                method = "brnn",
+                preProcess = c("center"))
+
+    stop.time<-proc.time()
+    
+    run.time<-stop.time -start.time
+    
+    print(run.time)
+    
+    stopCluster(cl)
+    
+  pred_br           <- predict(xgb_base, newdata=holdout)
+  print(MSE_table_br[i,1])
+}
+
+plot(pred_br, holdout$oos_g_5to14)
+abline(0,1)
+```
+
+
+
+
+```
+

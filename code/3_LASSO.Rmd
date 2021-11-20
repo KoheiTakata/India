@@ -130,7 +130,7 @@ for(i in 1:14){
           rename(pred = lambda.min) %>% 
           mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
           as.matrix()
-plot(x = mean, y = holdout$oos_g_5to14, xlim = c(0, 150), ylim = c(0, 150))
+plot(x = mean, y = holdout$oos_g_5to14, xlim = c(0, 3), ylim = c(0, 2))
 #write.csv(pred, "oosg_udai.csv")
 ```
 
