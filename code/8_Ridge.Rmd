@@ -51,7 +51,7 @@ District_list  <- unique(data$District)
 
 ```
 
-```{r brnn, include=TRUE}
+```{r XGBoost, include=TRUE}
 #install.packages("randomForest")
 #install.packages("caret")
 #install.packages("parallel")
@@ -60,7 +60,7 @@ District_list  <- unique(data$District)
 no_cores <- detectCores() - 1
 
 set.seed(02138)
-MSE_table_br     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
+MSE_table_RG     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
 
 i =1
 for(i in 1:14){
@@ -97,11 +97,13 @@ for(i in 1:14){
   
     registerDoParallel(cl)
 
-    xgb_base <- caret::train(
-                x = x_train,
-                y = training$oos_g_5to14,
-                method = "brnn",
-                preProcess = c("center"))
+
+    lambda <- 10^seq(-3, 3, length = 100)
+    
+    model_RG <- caret::train(oos_g_5to14~., data=training, method = "glmnet",
+                             trControl = trainControl("cv", number = 10),
+                             tuneGrid = expand.grid(alpha = 0, lambda = lambda))
+
 
     stop.time<-proc.time()
     
@@ -111,12 +113,20 @@ for(i in 1:14){
     
     stopCluster(cl)
     
-  pred_br           <- predict(xgb_base, newdata=holdout)
-  print(MSE_table_br[i,1])
+  
+  pred_RG <- data.frame(pred = predict(model_RG, newdata=holdout)) %>%
+              mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
+              as.matrix()
+  MSE_table_RG[i,1] <- MSE(pred_RG, holdout$oos_g_5to14)
+  print(MSE_table_RG[i,1])
 }
 
-plot(pred_br, holdout$oos_g_5to14)
-abline(0,1)
+MSE_table_RG[15,1] <- mean(MSE_table_RG[1:14,1])
+ MSE_table_RG
+
+plot(pred_RG, holdout$oos_g_5to14)
+
+
 ```
 
 

@@ -44,7 +44,7 @@ District_list  <- unique(data$District)
 
 ```{r NN, include=TRUE}
 MSE_table_NN     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
-i = 1
+i = 4
 ## for loop
 for(i in 1:14){
   training   <- data %>% 
@@ -80,16 +80,30 @@ for(i in 1:14){
   #       layer_dense(units = 5, activation = 'relu', input_shape = c(339)) %>%
   #       layer_dense(units = 1)
   model %>%
-        layer_dense(units = 55, activation = 'relu', input_shape = c(341),
-                    kernel_regularizer = regularizer_l2(l = 0.022)) %>%
+        layer_dense(units = 50, activation = 'relu', input_shape = c(341),
+                    kernel_regularizer = regularizer_l2(l = 0.025)) %>%
         layer_dropout(rate=0.50)  %>%
         layer_dense(units = 30, activation = 'relu', 
-                    kernel_regularizer = regularizer_l2(l = 0.015))  %>%
+                    kernel_regularizer = regularizer_l2(l = 0.02))  %>%
         layer_dropout(rate=0.5)  %>%
-        layer_dense(units = 15, activation = 'relu', 
-                    kernel_regularizer = regularizer_l2(l = 0.015))  %>%
+        layer_dense(units = 20, activation = 'relu', 
+                    kernel_regularizer = regularizer_l2(l = 0.01))  %>%
+        layer_dropout(rate=0.5)  %>%
+        layer_dense(units = 10, activation = 'relu', 
+                    kernel_regularizer = regularizer_l2(l = 0.01))  %>%
         layer_dropout(rate=0.5)  %>%
         layer_dense(units = 1)
+  
+  optimizer_adam(
+  lr = 0.001,
+  beta_1 = 0.9,
+  beta_2 = 0.999,
+  epsilon = NULL,
+  decay = 0.000,
+  amsgrad = FALSE,
+  clipnorm = NULL,
+  clipvalue = NULL
+)
   
   model %>% compile(loss      = 'mse',
                     optimizer = 'rmsprop', 
@@ -98,7 +112,7 @@ for(i in 1:14){
   
   mymodel <- model %>%          
               fit(x_train_std, y_train,
-                  epochs = 50,
+                  epochs = 100,
                   batch_size = 32,
                   validation_split = 0.2)
   
@@ -111,5 +125,5 @@ for(i in 1:14){
 }
  MSE_table_NN[15,1]<- mean(MSE_table_NN[1:14,1])
  MSE_table_NN
- #write.csv(MSE_table_NN, "result_NN.csv")
+ write.csv(MSE_table_NN, "result_NN.csv")
 ```
