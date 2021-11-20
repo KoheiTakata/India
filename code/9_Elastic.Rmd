@@ -10,8 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("HDCI")
 #install.packages("tidyverse")
 #install.packages("sringr")
-#install.packages(foreach)
+#install.packages("foreach")
 #install.packages("needs")
+#install.packages('caret', dependencies = TRUE)
+#install.packages("ggplot2")
+
 library(foreach)
 library(glmnet)
 library(MLmetrics)
@@ -30,7 +33,6 @@ library(needs)
 library(caret)
 library(parallel)
 library(doParallel)
-library(randomForest)
 
 prioritize(dplyr)
 
@@ -51,12 +53,7 @@ District_list  <- unique(data$District)
 
 ```
 
-```{r XGBoost, include=TRUE}
-#install.packages("randomForest")
-#install.packages("caret")
-#install.packages("parallel")
-#install.packages("doParallel")
-#install.packages("ggplot2")
+```{r elastic, include=TRUE}
 no_cores <- detectCores() - 1
 
 set.seed(02138)
@@ -127,5 +124,4 @@ plot(pred_EL, holdout$oos_g_5to14)
 
 
 ```
-
 
