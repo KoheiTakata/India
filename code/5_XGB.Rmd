@@ -1,0 +1,137 @@
+```{r setup, include = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("glmnet")
+#install.packages("MLmetrics")
+#install.packages("neuralnet")
+#install.packages("keras")
+#install.packages("mlbench")
+#install.packages("magrittr")
+#install.packages("tensorflow")
+#install.packages("HDCI")
+#install.packages("tidyverse")
+#install.packages("sringr")
+#install.packages(foreach)
+#install.packages("needs")
+library(foreach)
+library(glmnet)
+library(MLmetrics)
+library(neuralnet)
+library(keras)
+library(mlbench)
+library(magrittr)
+library(tensorflow)
+library(HDCI)
+library(reticulate)
+library(stringr)
+library(parallel)
+library(doParallel)
+library(tidyverse)
+library(needs)
+library(caret)
+library(parallel)
+library(doParallel)
+library(randomForest)
+
+prioritize(dplyr)
+
+set.seed(02138)
+reticulate::py_discover_config()
+```
+
+```{r data_import, include = TRUE}
+data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") %>% 
+        select(-X) %>% 
+        mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
+                             grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
+                             grade7_b + grade7_g + grade8_b + grade8_g,
+               stu_pop     = num_student/tot_p*100) 
+  #write.csv(data, "data.csv")
+
+District_list  <- unique(data$District)
+
+```
+
+```{r XGBoost, include=TRUE}
+#install.packages("randomForest")
+#install.packages("caret")
+#install.packages("parallel")
+#install.packages("doParallel")
+#install.packages("ggplot2")
+no_cores <- detectCores() - 1
+
+set.seed(02138)
+MSE_table_XG     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
+
+i =1
+for(i in 1:14){
+  training          <- data %>% 
+                       filter(District != District_list[i]) %>% 
+                       select(colnames(data)[10: ncol(data)])
+  
+  holdout           <- data %>% 
+                       filter(District == District_list[i]) %>% 
+                       select(colnames(data)[10: ncol(data)])
+  
+  y_train <- training$oos_g_5to14 %>% 
+             as.matrix()
+  
+  x_train <- training %>% 
+             select(colnames(data)[11:ncol(data)]) %>% 
+             as.matrix()
+  
+  ## holdout
+  y_hold <- holdout$oos_g_5to14 %>% 
+            as.matrix()
+  
+  x_hold <- holdout %>% 
+            select(colnames(data)[11:ncol(data)]) %>% 
+            as.matrix()
+
+  
+  cl <- makePSOCKcluster(no_cores)
+    start.time<-proc.time()
+  
+    registerDoParallel(cl)
+    grid_default <- expand.grid(
+                    nrounds = 100,
+                    max_depth = 6,
+                    eta = 0.3,
+                    gamma = 0,
+                    colsample_bytree = 1,
+                    min_child_weight = 1,
+                    subsample = 1)
+
+    train_control <- caret::trainControl(
+                     method = "none",
+                     verboseIter = FALSE, # no training log
+                     allowParallel = TRUE) # FALSE for reproducible results )
+
+    xgb_base <- caret::train(
+                x = x_train,
+                y = y_train,
+                trControl = train_control,
+                tuneGrid = grid_default,
+                method = "xgbTree",
+                verbose = TRUE)
+
+    stop.time<-proc.time()
+    
+    run.time<-stop.time -start.time
+    
+    print(run.time)
+    
+    stopCluster(cl)
+    
+  pred_XG           <- predict(xgb_base, newdata=holdout)
+  print(MSE_table_RF[i,1])
+}
+
+plot(pred_RF, holdout$oos_g_5to14)
+abline(0,1)
+```
+
+
+
+
+```
+

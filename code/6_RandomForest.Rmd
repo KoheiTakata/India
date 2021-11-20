@@ -1,0 +1,103 @@
+```{r setup, include = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("glmnet")
+#install.packages("MLmetrics")
+#install.packages("neuralnet")
+#install.packages("keras")
+#install.packages("mlbench")
+#install.packages("magrittr")
+#install.packages("tensorflow")
+#install.packages("HDCI")
+#install.packages("tidyverse")
+#install.packages("sringr")
+#install.packages(foreach)
+#install.packages("needs")
+library(foreach)
+library(glmnet)
+library(MLmetrics)
+library(neuralnet)
+library(keras)
+library(mlbench)
+library(magrittr)
+library(tensorflow)
+library(HDCI)
+library(reticulate)
+library(stringr)
+library(parallel)
+library(doParallel)
+library(tidyverse)
+library(needs)
+library(caret)
+library(parallel)
+library(doParallel)
+library(randomForest)
+
+prioritize(dplyr)
+
+set.seed(02138)
+reticulate::py_discover_config()
+```
+
+```{r data_import, include = TRUE}
+data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") %>% 
+        select(-X) %>% 
+        mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
+                             grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
+                             grade7_b + grade7_g + grade8_b + grade8_g,
+               stu_pop     = num_student/tot_p*100) 
+  #write.csv(data, "data.csv")
+
+District_list  <- unique(data$District)
+
+```
+
+
+```{r Random_Forest, include=TRUE}
+#install.packages("randomForest")
+#install.packages("caret")
+#install.packages("parallel")
+#install.packages("doParallel")
+no_cores <- detectCores() - 1
+
+set.seed(02138)
+MSE_table_RF     <- matrix(NA, nrow = length(unique(data$District)) + 1, ncol = 1) ## spacing
+
+i =1
+for(i in 1:14){
+  training          <- data %>% 
+                       filter(District != District_list[i]) %>% 
+                       select(colnames(data)[10: ncol(data)])
+  
+  holdout           <- data %>% 
+                       filter(District == District_list[i]) %>% 
+                       select(colnames(data)[10: ncol(data)])
+  
+  cl <- makePSOCKcluster(no_cores)
+    start.time<-proc.time()
+  
+    registerDoParallel(cl)
+    tg <- data.frame(mtry = seq(2, 10, by = 2))
+    tc <- trainControl(method = "cv", number = 10)
+    
+    model_RF <-train(oos_g_5to14~., data=training, method='rf', tuneGrid = tg)
+    #model_RF          <- randomForest(oos_g_5to14~., data= training, subset = c(1:2000), importance = TRUE)
+    #print(model_RF)
+    stop.time<-proc.time()
+    
+    run.time<-stop.time -start.time
+    
+    print(run.time)
+    
+    stopCluster(cl)
+    
+  pred_RF           <- predict(model_RF, newdata=holdout)
+  MSE_table_RF[i,1] <- MSE(pred_RF, holdout$oos_g_5to14)
+  print(MSE_table_RF[i,1])
+}
+
+plot(pred_RF, holdout$oos_g_5to14)
+abline(0,1)
+```
+
+
+
