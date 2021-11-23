@@ -1,0 +1,355 @@
+"","Variable","Data Source","DISE Sub-Data source","Label","Unit","Change during reclean (24 Apr 2020)?","Notes"
+"1","asset_1","Census",NA,"HH has Radio/Transistor","Percent of HH in village","Same",NA
+"2","asset_10","Census",NA,"HH has Car/ Jeep/Van","Percent of HH in village","Same",NA
+"3","asset_11","Census",NA,"HH has TV, Computer/Laptop, Telephone/mobile pho","Percent of HH in village","Same",NA
+"4","asset_12","Census",NA,"HH has none of the assets specified","Percent of HH in village","Same",NA
+"5","asset_2","Census",NA,"HH has television","Percent of HH in village","Same",NA
+"6","asset_3","Census",NA,"HH has Computer/Laptop-With Internet","Percent of HH in village","Same",NA
+"7","asset_4","Census",NA,"HH has Computer/Laptop-Without Internet","Percent of HH in village","Same",NA
+"8","asset_5","Census",NA,"HH has Telephone/Mobile Phone-Landline only","Percent of HH in village","Same",NA
+"9","asset_6","Census",NA,"HH has mobile phone","Percent of HH in village","Same",NA
+"10","asset_7","Census",NA,"HH has Telephone/Mobile Phone-Both","Percent of HH in village","Same",NA
+"11","asset_8","Census",NA,"HH has Bicycle","Percent of HH in village","Same",NA
+"12","asset_9","Census",NA,"HH has scooter/motorcycle","Percent of HH in village","Same",NA
+"13","banking_services","Census",NA,"HH availing banking services","Percent of HH in village","Same",NA
+"14","bathing_facility_1","Census",NA,"HH has bathroom","Percent of HH in village","Same",NA
+"15","bathing_facility_2","Census",NA,"HH has bathing enclosure without roof","Percent of HH in village","Same",NA
+"16","bathing_facility_3","Census",NA,"HH does not have bathing facility","Percent of HH in village","Same",NA
+"17","cooking_inside_1","Census",NA,"HH cooks inside in kitchen","Percent of HH in village","Same",NA
+"18","cooking_inside_2","Census",NA,"HH cooks inside but not in kitchen","Percent of HH in village","Same",NA
+"19","cooking_inside_drop","Census",NA,"HH cooks inside (sum of in kitchen and not in kitchen)","Percent of HH in village","Same",NA
+"20","cooking_not","Census",NA,"HH does no cooking","Percent of HH in village","Same",NA
+"21","cooking_outside_1","Census",NA,"HH cooks outside in kitchen","Percent of HH in village","Same",NA
+"22","cooking_outside_2","Census",NA,"HH cooks outside but not in kitchen","Percent of HH in village","Same",NA
+"23","cooking_outside_drop","Census",NA,"HH cooks outside (sum of in kitchen and not in kitchen)","Percent of HH in village","Same",NA
+"24","district_code_2001","Census",NA,"District code in 2001 Census","Identifier","Dropped","Redundant with Census code"
+"25","f_06","Census",NA,"Number of females age 0 to 6 years","Number in village","Same",NA
+"26","f_ill","Census",NA,"Number of illiterate females in village","Number in village","Same",NA
+"27","f_lit","Census",NA,"Number of literate females in village","Number in village","Same",NA
+"28","f_sc","Census",NA,"Number of Scheduled Caste females in village","Number in village","Same",NA
+"29","f_st","Census",NA,"Number of Scheduled Tribe females in village","Number in village","Same",NA
+"30","floor_material_1","Census",NA,"HH Has Mud Floor","Percent of HH in village","Same",NA
+"31","floor_material_2","Census",NA,"HH Has Wood/Bamboo Floor","Percent of HH in village","Same",NA
+"32","floor_material_3","Census",NA,"HH Has Burnt Brick Floor","Percent of HH in village","Same",NA
+"33","floor_material_4","Census",NA,"HH Has Stone Floor","Percent of HH in village","Same",NA
+"34","floor_material_5","Census",NA,"HH Has Cement Floor","Percent of HH in village","Same",NA
+"35","floor_material_6","Census",NA,"HH Has Mosaic/Floor Tiles","Percent of HH in village","Same",NA
+"36","floor_material_7","Census",NA,"HH Has Any Other Material Floor","Percent of HH in village","Same",NA
+"37","fuel_cooking_1","Census",NA,"HH Uses Firewood for Cooking","Percent of HH in village","Same",NA
+"38","fuel_cooking_10","Census",NA,"HH Does Not Cook","Percent of HH in village","Same",NA
+"39","fuel_cooking_2","Census",NA,"HH Uses Crop Residue for Cooking","Percent of HH in village","Same",NA
+"40","fuel_cooking_3","Census",NA,"HH Uses Cowdung Cake for Cooking","Percent of HH in village","Same",NA
+"41","fuel_cooking_4","Census",NA,"HH Uses Coal,Lignite,Charcoal for Cooking","Percent of HH in village","Same",NA
+"42","fuel_cooking_5","Census",NA,"HH Uses Kerosene for Cooking","Percent of HH in village","Same",NA
+"43","fuel_cooking_6","Census",NA,"HH Uses LPG/PNG for Cooking","Percent of HH in village","Same",NA
+"44","fuel_cooking_7","Census",NA,"HH Uses Electricity for Cooking","Percent of HH in village","Same",NA
+"45","fuel_cooking_8","Census",NA,"HH Uses Biogas for Cooking","Percent of HH in village","Same",NA
+"46","fuel_cooking_9","Census",NA,"HH Uses Any Other Material for Cooking","Percent of HH in village","Same",NA
+"47","house_condition_residence_2","Census",NA,"House is used only as residence and condition is livable","Percent of HH in village","Same",NA
+"48","house_condition_residence_3","Census",NA,"House  is used only as residence and condition is dilapidated","Percent of HH in village","Same",NA
+"49","house_condition_residence1_1","Census",NA,"House  is used only as residence and condition is good","Percent of HH in village","Same",NA
+"50","house_condition_residence2_2","Census",NA,"House is used as residence and other use and condition is good","Percent of HH in village","Same",NA
+"51","house_condition_residence2_3","Census",NA,"House is used as residence and other use and condition is livable","Percent of HH in village","Same",NA
+"52","house_condition_residence2_4","Census",NA,"House is used as residence and other use and condition is dilapidated","Percent of HH in village","Same",NA
+"53","house_structure_1","Census",NA,"House is Permanent Structure","Percent of HH in village","Same",NA
+"54","house_structure_2","Census",NA,"House is Semi-Permanent Structure","Percent of HH in village","Same",NA
+"55","house_structure_3","Census",NA,"House is Total Temporary Structure","Percent of HH in village","Same",NA
+"56","house_structure_4","Census",NA,"House is Serviceable Structure","Percent of HH in village","Same",NA
+"57","house_structure_5","Census",NA,"House is Non-Serviceable Structure","Percent of HH in village","Same",NA
+"58","house_structure_6","Census",NA,"House is Unclassifiable Structure","Percent of HH in village","Same",NA
+"59","household_size_1","Census",NA,"HH size is 1 person","Percent of HH in village","Same",NA
+"60","household_size_2","Census",NA,"HH size is 2 people","Percent of HH in village","Same",NA
+"61","household_size_3","Census",NA,"HH size is 3 people","Percent of HH in village","Same",NA
+"62","household_size_4","Census",NA,"HH size is 4 people","Percent of HH in village","Same",NA
+"63","household_size_5","Census",NA,"HH size is 5 people","Percent of HH in village","Same",NA
+"64","household_size_6","Census",NA,"HH size is 6-8 people","Percent of HH in village","Same",NA
+"65","household_size_7","Census",NA,"HH size is 9+ people","Percent of HH in village","Same",NA
+"66","households_w_latrine_1","Census",NA,"HH has piped sewer system","Percent of HH in village","Same",NA
+"67","households_w_latrine_2","Census",NA,"HH has septic tank","Percent of HH in village","Same",NA
+"68","households_w_latrine_3","Census",NA,"HH has other flush/our latrine system","Percent of HH in village","Same",NA
+"69","households_w_latrine_4","Census",NA,"HH has pit latrine with slab/ventilated improved pit","Percent of HH in village","Same",NA
+"70","households_w_latrine_5","Census",NA,"HH has pit latrine without slab/open pit","Percent of HH in village","Same",NA
+"71","households_w_latrine_6","Census",NA,"HH disposes of night soil into open drain","Percent of HH in village","Same",NA
+"72","households_w_latrine_7","Census",NA,"HH has serviced latrine with night soil removed by human","Percent of HH in village","Same",NA
+"73","households_w_latrine_8","Census",NA,"HH has serviced latrine with night soil removed by animal","Percent of HH in village","Same",NA
+"74","households_wo_latrine_1","Census",NA,"HH uses public latrine","Percent of HH in village","Same",NA
+"75","households_wo_latrine_2","Census",NA,"HH defecates in open","Percent of HH in village","Same",NA
+"76","location_drinking_water_1","Census",NA,"HH drinking water source is within premises","Percent of HH in village","Same",NA
+"77","location_drinking_water_2","Census",NA,"HH drinking water source is near premises","Percent of HH in village","Same",NA
+"78","location_drinking_water_3","Census",NA,"HH drinking water source is away from premises","Percent of HH in village","Same",NA
+"79","m_06","Census",NA,"Number of males age 0 to 6 years","Number in village","Same",NA
+"80","m_ill","Census",NA,"Number of illiterate males in village","Number in village","Same",NA
+"81","m_lit","Census",NA,"Number of literate males in village","Number in village","Same",NA
+"82","m_sc","Census",NA,"Number of Scheduled Caste males in village","Number in village","Same",NA
+"83","m_st","Census",NA,"Number of Scheduled Tribe males in village","Number in village","Same",NA
+"84","main_al_f","Census",NA,"Number of female full-time agricultural laborers","Number in village","Same",NA
+"85","main_al_m","Census",NA,"Number of male full-time agricultural laborers","Number in village","Same",NA
+"86","main_al_p","Census",NA,"Number of full-time agricultural laborers","Number in village","Same",NA
+"87","main_cl_f","Census",NA,"Number of female full-time cultivators","Number in village","Same",NA
+"88","main_cl_m","Census",NA,"Number of male full-time cultivators","Number in village","Same",NA
+"89","main_cl_p","Census",NA,"Number of full-time cultivators","Number in village","Same",NA
+"90","main_hh_f","Census",NA,"Number of females in full-time household industries","Number in village","Same",NA
+"91","main_hh_m","Census",NA,"Number of males in full-time household industries","Number in village","Same",NA
+"92","main_hh_p","Census",NA,"Number of people in full-time household industries","Number in village","Same",NA
+"93","main_ot_f","Census",NA,"Number of females full-time other workers","Number in village","Same",NA
+"94","main_ot_m","Census",NA,"Number of males full-time other workers","Number in village","Same",NA
+"95","main_ot_p","Census",NA,"Number of full-time other workers","Number in village","Same",NA
+"96","mainwork_f","Census",NA,"Number of female full-time workers","Number in village","Same",NA
+"97","mainwork_m","Census",NA,"Number of male full-time workers","Number in village","Same",NA
+"98","mainwork_p","Census",NA,"Number of full-time workers","Number in village","Same",NA
+"99","marg_al_0_3_f","Census",NA,"Number of female 0-3 month part-time agricultural laborers","Number in village","Same",NA
+"100","marg_al_0_3_m","Census",NA,"Number of male 0-3 month part-time agricultural laborers","Number in village","Same",NA
+"101","marg_al_0_3_p","Census",NA,"Number of 0-3 month part-time agricultural laborers","Number in village","Same",NA
+"102","marg_al_3_6_f","Census",NA,"Number of female 3-6 month part-time agricultural laborers","Number in village","Same",NA
+"103","marg_al_3_6_m","Census",NA,"Number of male 3-6 month part-time agricultural laborers","Number in village","Same",NA
+"104","marg_al_3_6_p","Census",NA,"Number of 3-6 month part-time agricultural laborers","Number in village","Same",NA
+"105","marg_cl_0_3_f","Census",NA,"Number of female 0-3 month part-time cultivators","Number in village","Same",NA
+"106","marg_cl_0_3_m","Census",NA,"Number of male 0-3 month part-time cultivators","Number in village","Same",NA
+"107","marg_cl_0_3_p","Census",NA,"Number of 0-3 month part-time cultivators","Number in village","Same",NA
+"108","marg_cl_3_6_f","Census",NA,"Number of female 3-6 month part-time cultivators","Number in village","Same",NA
+"109","marg_cl_3_6_m","Census",NA,"Number of male 3-6 month part-time cultivators","Number in village","Same",NA
+"110","marg_cl_3_6_p","Census",NA,"Number of 3-6 month part-time cultivators","Number in village","Same",NA
+"111","marg_hh_0_3_f","Census",NA,"Number of female 0-3 month part-time household industries","Number in village","Same",NA
+"112","marg_hh_0_3_m","Census",NA,"Number of male 0-3 month part-time household industries","Number in village","Same",NA
+"113","marg_hh_0_3_p","Census",NA,"Number of 0-3 month part-time household industries","Number in village","Same",NA
+"114","marg_hh_3_6_f","Census",NA,"Number of female 3-6 month part-time household industries","Number in village","Same",NA
+"115","marg_hh_3_6_m","Census",NA,"Number of male 3-6 month part-time household industries","Number in village","Same",NA
+"116","marg_hh_3_6_p","Census",NA,"Number of 3-6 month part-time household industries","Number in village","Same",NA
+"117","marg_ot_0_3_f","Census",NA,"Number of female 0-3 month part-time other work","Number in village","Same",NA
+"118","marg_ot_0_3_m","Census",NA,"Number of male 0-3 month part-time other work","Number in village","Same",NA
+"119","marg_ot_0_3_p","Census",NA,"Number of people 0-3 month part-time other work","Number in village","Same",NA
+"120","marg_ot_3_6_f","Census",NA,"Number of female 3-6 month part-time other work","Number in village","Same",NA
+"121","marg_ot_3_6_m","Census",NA,"Number of male 3-6 month part-time other work","Number in village","Same",NA
+"122","marg_ot_3_6_p","Census",NA,"Number of people 3-6 month part-time other work","Number in village","Same",NA
+"123","margwork_0_3_f","Census",NA,"Number of female 0-3 month part-time workers","Number in village","Same",NA
+"124","margwork_0_3_m","Census",NA,"Number of male 0-3 month part-time workers","Number in village","Same",NA
+"125","margwork_0_3_p","Census",NA,"Number of 0-3 month part-time workers","Number in village","Same",NA
+"126","margwork_3_6_f","Census",NA,"Number of female 3-6 month part-time workers","Number in village","Same",NA
+"127","margwork_3_6_m","Census",NA,"Number of male 3-6 month part-time workers","Number in village","Same",NA
+"128","margwork_3_6_p","Census",NA,"Number of 3-6 month part-time workers","Number in village","Same",NA
+"129","n_married_couple_0","Census",NA,"HH has 0 married couples","Percent of HH in village","Added","Previously erroneously named ""ownership_status_4"""
+"130","n_married_couple_1","Census",NA,"HH has 1 married couple","Percent of HH in village","Same",NA
+"131","n_married_couple_2","Census",NA,"HH has 2 married couples","Percent of HH in village","Same",NA
+"132","n_married_couple_3","Census",NA,"HH has 3 married couples","Percent of HH in village","Same",NA
+"133","n_married_couple_4","Census",NA,"HH has 4 married couples","Percent of HH in village","Same",NA
+"134","n_married_couple_5","Census",NA,"HH has 5+ married couples","Percent of HH in village","Same",NA
+"135","n_rooms_0","Census",NA,"HH has no exclusive room","Percent of HH in village","Same",NA
+"136","n_rooms_1","Census",NA,"HH has 1 dwelling room","Percent of HH in village","Same",NA
+"137","n_rooms_2","Census",NA,"HH has 2 dwelling room","Percent of HH in village","Same",NA
+"138","n_rooms_3","Census",NA,"HH has 3 dwelling room","Percent of HH in village","Same",NA
+"139","n_rooms_4","Census",NA,"HH has 4 dwelling room","Percent of HH in village","Same",NA
+"140","n_rooms_5","Census",NA,"HH has 5 dwelling room","Percent of HH in village","Same",NA
+"141","n_rooms_6","Census",NA,"HH has 6+ dwelling room","Percent of HH in village","Same",NA
+"142","no_hh","Census",NA,"Number of HHs in village","Number in village","Same",NA
+"143","non_work_f","Census",NA,"Number of female unemployed workers","Number in village","Same",NA
+"144","non_work_m","Census",NA,"Number of male unemployed workers","Number in village","Same",NA
+"145","non_work_p","Census",NA,"Number of unemployed workers","Number in village","Same",NA
+"146","ownership_status_1","Census",NA,"HH owns house","Percent of HH in village","Same",NA
+"147","ownership_status_2","Census",NA,"HH rents house","Percent of HH in village","Same",NA
+"148","ownership_status_3","Census",NA,"HH neither owns nor rents house","Percent of HH in village","Same",NA
+"149","ownership_status_4","Census",NA,"HH has 0 married couples","Percent of HH in village","Dropped","Correctly renamed to ""n_married_couple_0"""
+"150","p_06","Census",NA,"Number of people age 0 to 6 years","Number in village","Same",NA
+"151","p_ill","Census",NA,"Number of illiterate people in village","Number in village","Same",NA
+"152","p_lit","Census",NA,"Number of literate people in village","Number in village","Same",NA
+"153","p_sc","Census",NA,"Number of Scheduled Caste people in village","Number in village","Same",NA
+"154","p_st","Census",NA,"Number of Scheduled Tribe people in village","Number in village","Same",NA
+"155","rel_age06_fe_buddhist_rur","Census",NA,"Number of rural female Buddhist 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"156","rel_age06_fe_christian_rur","Census",NA,"Number of rural female Christian 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"157","rel_age06_fe_hindu_rur","Census",NA,"Number of rural female Hindu 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"158","rel_age06_fe_jain_rur","Census",NA,"Number of rural female Jain 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"159","rel_age06_fe_muslim_rur","Census",NA,"Number of rural female Muslim 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"160","rel_age06_fe_notstated_rur","Census",NA,"Number of rural female No Stated Religion 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"161","rel_age06_fe_other_rur","Census",NA,"Number of rural female Other 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"162","rel_age06_fe_sikh_rur","Census",NA,"Number of rural female Sikh 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"163","rel_age06_ma_buddhist_rur","Census",NA,"Number of rural male Buddhist 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"164","rel_age06_ma_christian_rur","Census",NA,"Number of rural male Christian 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"165","rel_age06_ma_hindu_rur","Census",NA,"Number of rural male Hindu 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"166","rel_age06_ma_jain_rur","Census",NA,"Number of rural male Jain 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"167","rel_age06_ma_muslim_rur","Census",NA,"Number of rural male Muslim 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"168","rel_age06_ma_notstated_rur","Census",NA,"Number of rural male No Stated Religion 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"169","rel_age06_ma_other_rur","Census",NA,"Number of rural male Other 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"170","rel_age06_ma_sikh_rur","Census",NA,"Number of rural male Sikh 0-6 year olds in sub-district","Number in sub-district","Same",NA
+"171","rel_pop_fe_buddhist_rur","Census",NA,"Number of rural female Buddhists in sub-district","Number in sub-district","Same",NA
+"172","rel_pop_fe_christian_rur","Census",NA,"Number of rural female Christians in sub-district","Number in sub-district","Same",NA
+"173","rel_pop_fe_hindu_rur","Census",NA,"Number of rural female Hindus in sub-district","Number in sub-district","Same",NA
+"174","rel_pop_fe_jain_rur","Census",NA,"Number of rural female Jains in sub-district","Number in sub-district","Same",NA
+"175","rel_pop_fe_muslim_rur","Census",NA,"Number of rural female Muslims in sub-district","Number in sub-district","Same",NA
+"176","rel_pop_fe_notstated_rur","Census",NA,"Number of rural female No Stated Religions in sub-district","Number in sub-district","Same",NA
+"177","rel_pop_fe_other_rur","Census",NA,"Number of rural female Others in sub-district","Number in sub-district","Same",NA
+"178","rel_pop_fe_sikh_rur","Census",NA,"Number of rural female Sikhs in sub-district","Number in sub-district","Same",NA
+"179","rel_pop_ma_buddhist_rur","Census",NA,"Number of rural male Buddhists in sub-district","Number in sub-district","Same",NA
+"180","rel_pop_ma_christian_rur","Census",NA,"Number of rural male Christians in sub-district","Number in sub-district","Same",NA
+"181","rel_pop_ma_hindu_rur","Census",NA,"Number of rural male Hindus in sub-district","Number in sub-district","Same",NA
+"182","rel_pop_ma_jain_rur","Census",NA,"Number of rural male Jains in sub-district","Number in sub-district","Same",NA
+"183","rel_pop_ma_muslim_rur","Census",NA,"Number of rural male Muslims in sub-district","Number in sub-district","Same",NA
+"184","rel_pop_ma_notstated_rur","Census",NA,"Number of rural male No Stated Religions in sub-district","Number in sub-district","Same",NA
+"185","rel_pop_ma_other_rur","Census",NA,"Number of rural male Others in sub-district","Number in sub-district","Same",NA
+"186","rel_pop_ma_sikh_rur","Census",NA,"Number of rural male Sikhs in sub-district","Number in sub-district","Same",NA
+"187","roof_material_1","Census",NA,"HH has Grass/Thatch/Bamboo/Wood/Mud/etc. Roof","Percent of HH in village","Same",NA
+"188","roof_material_2","Census",NA,"HH has Plastic/Polythene Roof","Percent of HH in village","Same",NA
+"189","roof_material_3","Census",NA,"HH has Handmade Tiles Roof","Percent of HH in village","Same",NA
+"190","roof_material_4","Census",NA,"HH has Machine made Tiles Roof","Percent of HH in village","Same",NA
+"191","roof_material_5","Census",NA,"HH has Burnt Brick Roof","Percent of HH in village","Same",NA
+"192","roof_material_6","Census",NA,"HH has Stone/Slate Roof","Percent of HH in village","Same",NA
+"193","roof_material_7","Census",NA,"HH has G.I./Metal/Asbestos sheets Roof","Percent of HH in village","Same",NA
+"194","roof_material_8","Census",NA,"HH has Concrete Roof","Percent of HH in village","Same",NA
+"195","roof_material_9","Census",NA,"HH has Roof made from other material","Percent of HH in village","Same",NA
+"196","sex_ratio_06","Census",NA,"Number of 0-6 year old boys per 100 0-6 year old girls","Number in village","Same",NA
+"197","sex_ratio_total","Census",NA,"Number of males per 100 females","Number in village","Same",NA
+"198","source_drinking_water_1","Census",NA,"HH main source of drinking water is tapwater from treated source","Percent of HH in village","Same",NA
+"199","source_drinking_water_10","Census",NA,"HH main source of drinking water is other sources","Percent of HH in village","Same",NA
+"200","source_drinking_water_2","Census",NA,"HH main source of drinking water is tapwater from untreated source","Percent of HH in village","Same",NA
+"201","source_drinking_water_3","Census",NA,"HH main source of drinking water is covered well","Percent of HH in village","Same",NA
+"202","source_drinking_water_4","Census",NA,"HH main source of drinking water is uncovered well","Percent of HH in village","Same",NA
+"203","source_drinking_water_5","Census",NA,"HH main source of drinking water is handpump","Percent of HH in village","Same",NA
+"204","source_drinking_water_6","Census",NA,"HH main source of drinking water is tubewell/borehole","Percent of HH in village","Same",NA
+"205","source_drinking_water_7","Census",NA,"HH main source of drinking water is spring","Percent of HH in village","Same",NA
+"206","source_drinking_water_8","Census",NA,"HH main source of drinking water is river/canal","Percent of HH in village","Same",NA
+"207","source_drinking_water_9","Census",NA,"HH main source of drinking water is tank/pond/lake","Percent of HH in village","Same",NA
+"208","source_lighting_1","Census",NA,"HH main source of lighting is electricity","Percent of HH in village","Same",NA
+"209","source_lighting_2","Census",NA,"HH main source of lighting is kerosene","Percent of HH in village","Same",NA
+"210","source_lighting_3","Census",NA,"HH main source of lighting is solar energy","Percent of HH in village","Same",NA
+"211","source_lighting_4","Census",NA,"HH main source of lighting is other oil","Percent of HH in village","Same",NA
+"212","source_lighting_5","Census",NA,"HH main source of lighting is any other source","Percent of HH in village","Same",NA
+"213","source_lighting_6","Census",NA,"HH has no lighting","Percent of HH in village","Same",NA
+"214","tot_f","Census",NA,"Number of females in village","Number in village","Same",NA
+"215","tot_m","Census",NA,"Number of males in village","Number in village","Same",NA
+"216","tot_p","Census",NA,"Population of village","Number in village","Same",NA
+"217","tot_work_f","Census",NA,"Number of female full-time and part-time workers","Number in village","Same",NA
+"218","tot_work_m","Census",NA,"Number of male full-time and part-time workers","Number in village","Same",NA
+"219","tot_work_p","Census",NA,"Number of full-time and part-time workers","Number in village","Same",NA
+"220","wall_material_1","Census",NA,"HH has Grass/Thatch/Bamboo etc. Wall","Percent of HH in village","Same",NA
+"221","wall_material_10","Census",NA,"HH has Any Other Material Wall","Percent of HH in village","Same",NA
+"222","wall_material_2","Census",NA,"HH has Plastic/Polythene Wall","Percent of HH in village","Same",NA
+"223","wall_material_3","Census",NA,"HH has Mud/Unburnt Brick Wall","Percent of HH in village","Same",NA
+"224","wall_material_4","Census",NA,"HH has Wood Wall","Percent of HH in village","Same",NA
+"225","wall_material_5","Census",NA,"HH has Stone Wall not packed with mortar","Percent of HH in village","Same",NA
+"226","wall_material_6","Census",NA,"HH has Stone Wall packed with mortar","Percent of HH in village","Same",NA
+"227","wall_material_7","Census",NA,"HH has G.I./Metal/Asbestos sheets Wall","Percent of HH in village","Same",NA
+"228","wall_material_8","Census",NA,"HH has Burnt Brick Wall","Percent of HH in village","Same",NA
+"229","wall_material_9","Census",NA,"HH has Concrete Wall","Percent of HH in village","Same",NA
+"230","waste_water_1","Census",NA,"HH waste water outlet is connected to closed drain","Percent of HH in village","Same",NA
+"231","waste_water_2","Census",NA,"HH waste water outlet is connected to open drain","Percent of HH in village","Same",NA
+"232","waste_water_3","Census",NA,"HH waste water outlet is connected to no drain","Percent of HH in village","Same",NA
+"233","apprb5","DISE","Enrollment","Number of boys who appeared for Class 5 exams","Sum across schools in village","Added",NA
+"234","apprg5","DISE","Enrollment","Number of girls who appeared for Class 5 exams","Sum across schools in village","Added",NA
+"235","approachbyroad","DISE","RTE","School is approachable by road","Fraction of schools in village","Same",NA
+"236","blackboard","DISE","Facility","Number of blackboards at school","Average number per school in village","Dropped","Does not exist in 2016-17 or 2017-18 datasets"
+"237","bldstatus","DISE","Facility","School building status: 1=Private, 2=Rented, 3=Government, 4=Govt school in a rent-free building, 5=No building, 6=Dilapidated, 7=Under construction","Average across schools in village (average doesn’t really make sense for this categorical variable, but note that majority of schools are government, so this variable could be reconstructed to a binary: all schools are government or not)","Dropped","Categorical variable, previously erroneously averaged, now reconstituted as multiple binary variables"
+"238","bld_govt","DISE","Facility","School building is government building","Fraction of schools in village","Added",NA
+"239","bld_incomp","DISE","Facility","School building is under construction or dilapidated","Fraction of schools in village","Added",NA
+"240","bld_nobld","DISE","Facility","No school building","Fraction of schools in village","Added",NA
+"241","bld_private","DISE","Facility","School building is privately owned or rented","Fraction of schools in village","Added",NA
+"242","block_name_dise","DISE","Basic","Block name (per DISE)","Identifier","Same",NA
+"243","bndrywall_none","DISE","Facility","No boundary wall","Fraction of schools in village","Added",NA
+"244","bndrywall_other","DISE","Facility","Boundary wall made from other material","Fraction of schools in village","Added",NA
+"245","bndrywall_partial","DISE","Facility","Boundary wall is partially complete or broken","Fraction of schools in village","Added",NA
+"246","bndrywall_pucca","DISE","Facility","Boundary wall is made of pucca","Fraction of schools in village","Added",NA
+"247","bookinlib","DISE","Facility","Number of books in school library","Average number per school in village","Same",NA
+"248","boy_girl_ratio","DISE","Enrollment","Boys per 100 girls in school","Sum of boy-per-100-girls ratio across schools in village (should be average)","Dropped","Previously incorrectly calculated, now dropped since it can be constructed from other variables (number girls, number boys) if desired"
+"249","cal","DISE","Facility","School has computer-assisted learning","Fraction of schools in village","Same",NA
+"250","cce","DISE","RTE","School has continuous and comprehensive evaluation","Fraction of schools in village","Same",NA
+"251","clgood","DISE","Facility","Number of classrooms in good repair","Average number per school in village","Same",NA
+"252","clnotgood","DISE","Facility","Number of classrooms not in good repair","Average number per school in village","Same",NA
+"253","clrooms","DISE","Facility","Number of classrooms in total","Average number per school in village","Added",NA
+"254","computer","DISE","Basic","Number of computers in school","Average number per school in village","Same",NA
+"255","dis_b","DISE","Enrollment","Number of enrolled disabled boys in grades 1-8","Sum across schools in village","Same",NA
+"256","dis_g","DISE","Enrollment","Number of enrolled disabled girls in grades 1-8","Sum across schools in village","Same",NA
+"257","district_name_dise","DISE","Basic","District name (per DISE)","Identifier","Same",NA
+"258","electric","DISE","Facility","School has electricity","Fraction of schools in village","Same",NA
+"259","estdyear","DISE","General","Year school is established","Average across schools in village","Same",NA
+"260","funds_received","DISE","General","Funds Received from School Development Grant and Teacher TLM Grant (in INR)","Average across schools in village","Same",NA
+"261","gen_b","DISE","Enrollment","Number of enrolled general caste boys in grades 1-8","Sum across schools in village","Dropped","Previously calculated from total number of children minus OBC, SC, or ST. However, on further inspection this was yielding nonsensical results (such as negative values). Dropping for now, can add back in during feature engineering if desired"
+"262","gen_g","DISE","Enrollment","Number of enrolled general caste girls in grades 1-8","Sum across schools in village","Dropped",NA
+"263","gradabove","DISE","Teachers","Number of teachers with graduate level degree or above","Sum across schools in village","Changed","Changed from average across schools in village to sum across schools in village"
+"264","grade1_b","DISE","Enrollment","Number of enrolled boys in grade 1","Sum across schools in village","Same",NA
+"265","grade1_g","DISE","Enrollment","Number of enrolled girls in grade 1","Sum across schools in village","Same",NA
+"266","grade2_b","DISE","Enrollment","Number of enrolled boys in grade 2","Sum across schools in village","Same",NA
+"267","grade2_g","DISE","Enrollment","Number of enrolled girls in grade 2","Sum across schools in village","Same",NA
+"268","grade3_b","DISE","Enrollment","Number of enrolled boys in grade 3","Sum across schools in village","Same",NA
+"269","grade3_g","DISE","Enrollment","Number of enrolled girls in grade 3","Sum across schools in village","Same",NA
+"270","grade4_b","DISE","Enrollment","Number of enrolled boys in grade 4","Sum across schools in village","Same",NA
+"271","grade4_g","DISE","Enrollment","Number of enrolled girls in grade 4","Sum across schools in village","Same",NA
+"272","grade5_b","DISE","Enrollment","Number of enrolled boys in grade 5","Sum across schools in village","Same",NA
+"273","grade5_g","DISE","Enrollment","Number of enrolled girls in grade 5","Sum across schools in village","Same",NA
+"274","grade6_b","DISE","Enrollment","Number of enrolled boys in grade 6","Sum across schools in village","Same",NA
+"275","grade6_g","DISE","Enrollment","Number of enrolled girls in grade 6","Sum across schools in village","Same",NA
+"276","grade7_b","DISE","Enrollment","Number of enrolled boys in grade 7","Sum across schools in village","Same",NA
+"277","grade7_g","DISE","Enrollment","Number of enrolled girls in grade 7","Sum across schools in village","Same",NA
+"278","grade8_b","DISE","Enrollment","Number of enrolled boys in grade 8","Sum across schools in village","Same",NA
+"279","grade8_g","DISE","Enrollment","Number of enrolled girls in grade 8","Sum across schools in village","Same",NA
+"280","headtch","DISE","Teachers","School has head teacher","Sum across schools in village","Changed","Changed from average across schools in village to sum across schools in village"
+"281","higher_secondary","DISE","General","School has higher secondary grades (11-12)","Sum across schools in village","Added",NA
+"282","hmroom","DISE","Facility","Headmaster has separate room","Fraction of schools in village","Added",NA
+"283","kitshed_avail","DISE","RTE","Kitchen shed is available for Midday Meals","Fraction of schools in village","Added",NA
+"284","library","DISE","Facility","School has library","Fraction of schools in village","Same",NA
+"285","medchk","DISE","Facility","School has medical checkups for students","Fraction of schools in village","Same",NA
+"286","medinstr_hindi","DISE","General","Medium of instruction in school is Hindi","Sum across schools in village","Added","Schools may have more than one medium of instruction"
+"287","medinstr_english","DISE","General","Medium of instruction in school is English","Sum across schools in village","Added","Schools may have more than one medium of instruction"
+"288","medinstr_other","DISE","General","Medium of instruction in school is Other language","Sum across schools in village","Added","Schools may have more than one medium of instruction"
+"289","medinstr_urdu","DISE","General","Medium of instruction in school is Urdu","Sum across schools in village","Added","Schools may have more than one medium of instruction"
+"290","midday_meals","DISE","Facility","Schools provide midday meals to students","Fraction of schools in village","Same",NA
+"291","main_cl_mc","DISE","General","Number of academic inspections at school","Average across schools in village","Same",NA
+"292","numschools","DISE","Basic","Number of schools in village","Number in village","Same",NA
+"293","obc_b","DISE","Enrollment","Number of enrolled OBC boys in grades 1-8","Sum across schools in village","Same",NA
+"294","obc_g","DISE","Enrollment","Number of enrolled OBC girls in grades 1-8","Sum across schools in village","Same",NA
+"295","p60b5","DISE","Enrollment","Number of boys who passed Class 5 exams with >60%","Sum across schools in village","Added",NA
+"296","p60g5","DISE","Enrollment","Number of girls who passed Class 5 exams with >60%","Sum across schools in village","Added",NA
+"297","passb5","DISE","Enrollment","Number of boys who passed Class 5 exams","Sum across schools in village","Added",NA
+"298","passg5","DISE","Enrollment","Number of girls who passed Class 5 exams","Sum across schools in village","Added",NA
+"299","pcr_maintained","DISE","RTE","Pupil cumulative record is maintained in school","Fraction of schools in village","Same",NA
+"300","pcr_shared","DISE","RTE","Pupile cumulative record is shared with parents","Fraction of schools in village","Same",NA
+"301","playground","DISE","Facility","School has playground","Fraction of schools in village","Same",NA
+"302","ppsec","DISE","General","School has pre-primary section","Sum across schools in village","Changed","Changed from average across schools in village to sum across schools in village"
+"303","primary","DISE","General","Schools has primary grades (1-5)","Sum across schools in village","Added",NA
+"304","primary_only","DISE","General","School only has primary grades (1-5)","Number of schools in village","Same",NA
+"305","ramps","DISE","Facility","School has ramps for students","Fraction of schools in village","Same",NA
+"306","rep_b","DISE","Enrollment","Number of enrolled boys in grades 1-8 who failed and are repeating","Sum across schools in village","Same",NA
+"307","rep_g","DISE","Enrollment","Number of enrolled girls in grades 1-8 who failed and are repeating","Sum across schools in village","Same",NA
+"308","sc_b","DISE","Enrollment","Number of enrolled Scheduled Caste boys in grades 1-8","Sum across schools in village","Same",NA
+"309","sc_g","DISE","Enrollment","Number of enrolled Scheduled Caste girls in grades 1-8","Sum across schools in village","Same",NA
+"310","schhrstch","DISE","RTE","Number of teacher working hours (average across sections)","Average across schools in village","Added",NA
+"311","school_deped","DISE","General","School is managed by the Department of Education","Number in village","Same",NA
+"312","school_local","DISE","General","School is managed by a local government body","Number in village","Same",NA
+"313","school_madarsa","DISE","General","School is madarsa","Number in village","Added",NA
+"314","school_other","DISE","General","School is managed by other body","Number in village","Same",NA
+"315","school_private","DISE","General","School is private (non-government)","Number in village","Same",NA
+"316","school_rural","DISE","General","School is rural","Fraction of schools in village","Same",NA
+"317","schooldays","DISE","General","Number of school days, average of primary and upper primary","Average across schools in village","Same",NA
+"318","schooldays_missing","DISE","General","Number of school days is missing","Fraction of schools in village","Dropped","Imputed school days as average of other schools if missing"
+"319","schres","DISE","General","School is residential","Sum across schools in village","Added",NA
+"320","secondary","DISE","General","School has secondary grades (9-10)","Sum across schools in village","Added",NA
+"321","smcmeetings","DISE","RTE","Number of School Management Committee Meetings in school","Average across schools in village","Same",NA
+"322","smcmem_parent","DISE","RTE","Number of SMC members who are parents","Average across schools in village","Same",NA
+"323","smcmem_tot","DISE","RTE","Number of SMC members in total","Average across schools in village","Same",NA
+"324","smcsdp","DISE","RTE","SMC prepared a school development plan","Fraction of schools in village","Same",NA
+"325","smschildren","DISE","RTE","Whether any child enrolled in school attended Special Training","Fraction of schools in village","Added",NA
+"326","st_b","DISE","Enrollment","Number of enrolled Scheduled Tribe boys in grades 1-8","Sum across schools in village","Same",NA
+"327","st_g","DISE","Enrollment","Number of enrolled Scheduled Tribe girls in grades 1-8","Sum across schools in village","Same",NA
+"328","student_teacher_ratio","DISE","Enrollment","Number of students per teacher in village","Ratio across village","Same",NA
+"329","tch_female","DISE","Teachers","Number of female teachers in school","Sum across schools in village","Changed","Changed from average across schools in village to sum across schools in village"
+"330","tch_male","DISE","Teachers","Number of male teachers in school","Sum across schools in village","Changed","Changed from average across schools in village to sum across schools in village"
+"331","tch_total","DISE","Teachers","Total number of teachers in the school","Sum across schools in village","Changed","Basically the sum of tch_female and tch_male in 99.99% of cases. There was also an option to not enter teacher gender. almost no one availed of that (maybe <10 in the hundreds of thousands of schools), but for those schools, that's included in tch_total as well"
+"332","tchwithprof","DISE","Teachers","Number of teachers with professional qualifications in school","Sum across schools in village","Changed","Changed from average across schools in village to sum across schools in village"
+"333","toilet_b","DISE","Facility","Number of boy toilets in school","Average across schools in village","Same",NA
+"334","toilet_g","DISE","Facility","Number of girl toilets in school","Average across schools in village","Same",NA
+"335","tot_b","DISE","Enrollment","Number of enrolled boys in grades 1-8","Sum across schools in village","Same",NA
+"336","tot_g","DISE","Enrollment","Number of enrolled girls in grades 1-8","Sum across schools in village","Same",NA
+"337","txtbkrecd","DISE","RTE","School received textbooks","Fraction of schools in village","Same",NA
+"338","upper_primary","DISE","General","School has upper primary grades","Number of schools in village","Same",NA
+"339","urban","DISE","General","School is in urban designated area","Fraction of schools in village","Dropped","Dropped since colinear with rural"
+"340","village_[year]","DISE","Basic","Village is in the [2013-14, 2016-17, 2017-18] dataset","Yes/No","Added","Some villages are inconsistent across years. Kept all villages in any of the three DISE datasets."
+"341","village_code_dise","DISE","Basic","Village Code (per DISE)","Identifier","Same",NA
+"342","village_name_dise","DISE","Basic","Village Name (per DISE)","Identifier","Same",NA
+"343","visitsbrc","DISE","General","Number of visits by Block Resource Officer","Average across schools in village","Added",NA
+"344","visitscrc","DISE","General","Number of visits by Cluster Resource Coordinator","Average across schools in village","Added",NA
+"345","water_hndpmp","DISE","Facility","School gets water from handpump","Fraction of schools in village","Same",NA
+"346","water_none","DISE","Facility","School does not have water","Fraction of schools in village","Added",NA
+"347","water_other","DISE","Facility","School gets water from other source","Fraction of schools in village","Same",NA
+"348","water_tap","DISE","Facility","School gets water from tap","Fraction of schools in village","Same",NA
+"349","water_well","DISE","Facility","School gets water from well","Fraction of schools in village","Same",NA
+"350","wsec25p_any","DISE","Facility","School enrolls any children at entry level (under 25% quota per RTE) in current academic year","Fraction of schools in village","Same",NA
+"351","match_dise_census","IDinsight",NA,"Step in fuzzy matching process that matched DISE village with Census village","Ordinal step (variable used in dataset preparation, probably not useful for analysis)","Same",NA
+"352","missing_census","IDinsight",NA,"Village did not merge with Census and so is missing Census data","Yes/No","Same",NA
+"353","missing_h_census","IDinsight",NA,"Village is only missing Census houselisting sub-dataset","Yes/No","Same",NA
+"354","missing_p_census","IDinsight",NA,"Village is only missing Census population sub-dataset","Yes/No","Same",NA
