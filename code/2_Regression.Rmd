@@ -35,6 +35,14 @@ data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") 
                              grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
                              grade7_b + grade7_g + grade8_b + grade8_g,
                stu_pop     = num_student/tot_p*100)
+
+data_unimp <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data_unimp.csv") %>% 
+              select(-X) %>% 
+              mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
+                                   grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
+                                   grade7_b + grade7_g + grade8_b + grade8_g,
+                     stu_pop     = num_student/tot_p*100) %>% 
+              drop_na()
 #write.csv(data, "data.csv")
 
 District_list  <- unique(data$District)
@@ -70,17 +78,11 @@ MSE_func <- function(model, data){
 f_long_rhs  <- str_c(colnames(data)[11:ncol(data)], collapse = " + ")
 f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
 model_long  <- lm(f_long_c, data = data)
-aaa <- summary(model_long)
-aaa
 
 result_long <- MSE_func(model_long, data)
 result_long[[2]]
-write.csv(result_long[[2]], "result_long.csv")
+#write.csv(result_long[[2]], "result_long.csv")
 
-plot(data$oos_g_5to14, data$poverty, xlim = c(0, 150))
-cor(data$tot_p, data$poverty)
-
-lm(data$oos_g_5to14 ~ data$poverty + data$tot_p)
 ```
 
 

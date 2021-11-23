@@ -199,13 +199,6 @@ cl <- makePSOCKcluster(no_cores)
 
 registerDoParallel(cl)
 
-ols_model <- train(f_long_c, data = training, method = "lm")
-stopCluster(cl)
-
-
-temp <- coef(ols_model$finalModel, ols_model$finalModel$lambdaOpt)
-aa   <- temp@x[-1]
-
 
 var_list  <- varImp(ols_model, scale = TRUE)
 Imp_list_LS  <- data.frame(cbind(coef_lasso[,1],
