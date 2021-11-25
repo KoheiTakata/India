@@ -80,7 +80,7 @@ for(i in 1:14){
   #plot(cv_model)
   #coef_lasso <- enframe(coef(cv_model, s="lambda.min")[,1])
   pred <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
-          rename(pred = lambda.min) %>% 
+          rename(pred = lambda.min) %>%
           mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
           as.matrix()
     
@@ -119,6 +119,10 @@ for(i in 1:14){
   ## LASSO
   cv_model <- cv.glmnet(x = x_train, y = y_train)
   summary(cv_model)
+  
+  temp <- predict(cv_model, newx = x_train, s="lambda.min") - y_train
+  plot(temp)
+  
   #plot(cv_model)
   coef_lasso <- enframe(coef(cv_model, s="lambda.min")[,1]) %>% 
                 filter(value != 0,
@@ -127,10 +131,12 @@ for(i in 1:14){
                 as.matrix()
   
   mean <- as.data.frame(predict(cv_model, newx = x_hold, s="lambda.min")) %>%
-          rename(pred = lambda.min) %>% 
+          rename(pred = lambda.min) %>%
           mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
           as.matrix()
-plot(x = mean, y = holdout$oos_g_5to14, xlim = c(0, 3), ylim = c(0, 2))
+  
+plot(x = mean, y = holdout$oos_g_5to14, xlim = c(0, 300), ylim = c(0, 300))
+mean - holdout$oos_g_5to14
 #write.csv(pred, "oosg_udai.csv")
 ```
 

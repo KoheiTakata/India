@@ -163,6 +163,8 @@ plot(pred_RG, holdout$oos_g_5to14)
               mutate(pred = ifelse(pred < 0, 0, pred)) %>% 
               as.matrix()
 plot(x = pred_RG, y = holdout$oos_g_5to14, xlim = c(0, 300), ylim = c(0, 300))
+
+abline(a = 0, b = 1)
 #write.csv(pred_RG, "oosg_udai_RG.csv")
 ```
 

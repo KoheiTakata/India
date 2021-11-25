@@ -36,14 +36,9 @@ data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") 
                              grade7_b + grade7_g + grade8_b + grade8_g,
                stu_pop     = num_student/tot_p*100)
 
-data_unimp <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data_unimp.csv") %>% 
-              select(-X) %>% 
-              mutate(num_student = grade1_b + grade1_g + grade2_b + grade2_g + grade3_b + grade3_g + 
-                                   grade4_b + grade4_g + grade5_b + grade5_b + grade6_b + grade6_g + 
-                                   grade7_b + grade7_g + grade8_b + grade8_g,
-                     stu_pop     = num_student/tot_p*100) %>% 
-              drop_na()
 #write.csv(data, "data.csv")
+
+
 
 District_list  <- unique(data$District)
 
