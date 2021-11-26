@@ -15,12 +15,17 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("mice")
 #install.packages("readxl")
 #install.packages("stringr")
+#install.packages("skimr")
+#install.packages("RANN")
 
 library(tidyverse)
 library(stargazer)
 library(mice)
 library(readxl)
 library(stringr)
+library(caret)
+library(skimr)
+library(RANN)
 
 
 ```
@@ -203,35 +208,6 @@ data_ori  <- data_2016 %>%                                  ## merge all filtere
 
 ```
 
-```{r data_aggregate, include = FALSE}
-data_temp <- d2d %>% 
-             left_join(ASER, by = "District")             ## merge ASER into d2d
-
-data_2016 <- data_temp %>% 
-             filter(D2D_year == 2016) %>%                 ## filter d2d 2016 data
-             left_join(census_2017, by = "VillageCode")   ## merge with DISE 2017 year (closest year)
-
-data_2017 <- data_temp %>% 
-             filter(D2D_year == 2017) %>% 
-             left_join(census_2017, by = "VillageCode")
-
-
-data_2019 <- data_temp %>% 
-             filter(D2D_year == 2019) %>% 
-             left_join(census_2017, by = "VillageCode")
-
-data_2020 <- data_temp %>% 
-             filter(D2D_year == 2020) %>% 
-             left_join(census_2017, by = "VillageCode")
-
-data_ori  <- data_2016 %>%                                 ## merge all filtered data for d2d and DISE
-             bind_rows(data_2017) %>% 
-             bind_rows(data_2019) %>% 
-             bind_rows(data_2020) %>% 
-             left_join(census_DISE, by = "VillageCode") %>% ## merge census data
-             left_join(poverty,     by = "VillageCode")
-
-```
 
 ```{r data_imputation_all, include= TRUE}
 
@@ -241,6 +217,8 @@ data_unimp <- data_ori %>%
               select(VillageCode:D2D_year, DISE_year, oos_g_5to14, ASER, village:poverty) %>% 
               mutate(District = as.factor(District))
 
+#write.csv(data_unimp, "C:/Users/tkthe/Github/India/data/data_unimp.csv")
+
 init <- mice(data_unimp, maxit = 0)
 
 predM = init$predictorMatrix
@@ -249,8 +227,8 @@ predM[, c(1,2, 7, 8, 9, 10)] = 0
 
 set.seed(02138)
 #imputed = mice(data_unimp, method= "cart", predictorMatrix=predM, m= 5, maxit = 5) 
-imputed <- parlmice(data_unimp, method= "cart", predictorMatrix=predM, m =5, maxit = 4) 
+#imputed <- parlmice(data_unimp, method= "cart", predictorMatrix=predM, m = 5, maxit = 10) 
 data_imp<- complete(imputed)
-write.csv(data, "data.csv")
-```
+#write.csv(data_imp, "data_imp.csv")
 
+```

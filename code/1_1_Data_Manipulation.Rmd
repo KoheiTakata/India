@@ -8,8 +8,6 @@ data_ori <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.cs
 data_list <-  read.csv("https://github.com/KoheiTakata/India/raw/main/data/data_dictionary.csv")
 
 HH_unit <- unique(data_list$Unit)[c(1)] ## picking up level variables
-PS_unit <- unique(data_list$Unit)[c(6)] ## picking up level variables
-
 
 colnames(data_list)
 HH_list <- data_list %>% 
@@ -20,37 +18,11 @@ HH_list <- data_list %>%
            filter(Variable != c("tch_male")) %>% 
            filter(Variable != c("ownership_status_4"))
 
-PS_list <- data_list %>% 
-           filter("Change.during.reclean..24.Apr.2020.." != "Dropped") %>% 
-           mutate(Variable = ifelse(Variable == "main_cl_mc", "main_cl_m", Variable)) %>% 
-           filter(Unit %in% PS_unit) %>% 
-           select(Variable) %>% 
-           filter(Variable != c("tch_male")) %>% 
-           filter(Variable != c("ownership_status_4")) %>% 
-           filter(Variable != c("schooldays_missing")) %>% 
-           filter(Variable != c("urban"))
-
 data <- data_ori %>% 
-        mutate(HH_size = (1 * household_size_1 + 2 * household_size_2 + 3 * household_size_3 +
-                          4 * household_size_4 + 5 * household_size_5 + 7 * household_size_6 + 
-                          9 * household_size_7)/100) %>%
         mutate_at(.vars = vars(HH_list$Variable),
-                  .funs = list(num =  ~. *no_hh*HH_size)) %>%
-        #mutate_at(.vars = vars(PS_list$Variable),
-        #          .funs = list(num =  ~. *numschools/100)) %>%
-        #select(-HH_list$Variable) %>%
-        arrange(District) %>% 
-        #select(-starts_with("household_size_")) %>% 
-        mutate(n_rooms = 0 * n_rooms_0_num + 1 * n_rooms_1_num + 2 * n_rooms_2_num +
-                         3 * n_rooms_3_num + 4 * n_rooms_4_num + 5 * n_rooms_5_num + 
-                         6 * n_rooms_6_num)
-        #select(-starts_with("n_rooms_"))
-        #select(-PS_list$Variable)
-        #mutate(oos_g_5to14 = log(oos_g_5to14+1))
+                  .funs = list(num =  ~. *no_hh))
 
-hist(data$HH_size)
-  
-  
+#write.csv(data, "C:/Users/tkthe/Github/India/data/data.csv")
 
 ```
 
