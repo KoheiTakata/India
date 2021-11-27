@@ -111,6 +111,10 @@ for(i in 1:14){
 MSE_table_RG[15,1] <- mean(MSE_table_RG[1:14,1])
  MSE_table_RG
 plot(pred_RG, holdout$oos_g_5to14)
+
+#write.csv(MSE_table,  "C:/Users/tkthe/Github/India/output/result_Ridge.csv")
+ 
+
 ```
 
 

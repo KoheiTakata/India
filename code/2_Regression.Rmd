@@ -37,9 +37,6 @@ data <- read.csv("https://github.com/KoheiTakata/India/raw/main/data/data.csv") 
                stu_pop     = num_student/tot_p*100)
 
 #write.csv(data, "data.csv")
-
-
-
 District_list  <- unique(data$District)
 
 ```
@@ -76,7 +73,8 @@ model_long  <- lm(f_long_c, data = data)
 
 result_long <- MSE_func(model_long, data)
 result_long[[2]]
-#write.csv(result_long[[2]], "result_long.csv")
+
+#write.csv(result_long[[2]], "C:/Users/tkthe/Github/India/output/result_Long.csv")
 
 ```
 

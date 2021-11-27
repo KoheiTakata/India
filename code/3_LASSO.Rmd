@@ -91,7 +91,8 @@ for(i in 1:14){
  MSE_table[15,1]<- mean(MSE_table[1:14,1])
  MSE_table
  
-# write.csv(MSE_table, "result_LASSO.csv")
+#write.csv(MSE_table,  "C:/Users/tkthe/Github/India/output/result_LASSO.csv")
+  
 ```
 
 
@@ -137,7 +138,7 @@ for(i in 1:14){
   
 plot(x = mean, y = holdout$oos_g_5to14, xlim = c(0, 300), ylim = c(0, 300))
 mean - holdout$oos_g_5to14
-#write.csv(pred, "oosg_udai.csv")
+
 ```
 
 
@@ -177,12 +178,13 @@ CI <- pred%>%
       as.data.frame() %>% 
       cbind(mean) %>%
       cbind(holdout$Village) %>% 
+      cbind(holdout$Block) %>% 
       cbind(holdout$District) %>%
-      select( c(4, 5, 3, 1, 2)) %>% 
-       `colnames<-`(c( "District","Village", "mean","upper" ,"lower"))
+      select( c(6, 5, 4, 3, 1, 2)) %>% 
+       `colnames<-`(c( "District", "Block","Village", "mean","upper" ,"lower"))
 
 
-#write.csv(CI, "C:/Users/tkthe/Github/India/output/Udai_CI.csv"")
+#write.csv(CI, "C:/Users/tkthe/Github/India/output/Udai_CI.csv")
 
 ```
 
@@ -202,6 +204,7 @@ cl <- makePSOCKcluster(no_cores)
   f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
   f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
 
+  ols_model <- train(f_long_c, data = training, method = "lm")
 
 registerDoParallel(cl)
 
