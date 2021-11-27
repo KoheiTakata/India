@@ -209,14 +209,26 @@ cl <- makePSOCKcluster(no_cores)
 registerDoParallel(cl)
 
 
+  temp <- coef(ols_model$finalModel)
+
 var_list  <- varImp(ols_model, scale = TRUE)
 Imp_list_LS  <- data.frame(cbind(coef_lasso[,1],
-                        var_list$importance$Overall)) %>%
+                        var_list$importance$Overall,
+                        temp[-1])) %>%
                 mutate(X2 = as.numeric(X2)) %>% 
                 rename(Var = X1,
-                       Importance = X2) %>% 
+                       Importance = X2,
+                       coef = X3) %>% 
                 arrange(desc(Importance))
 
 write.csv(Imp_list_LS, "C:/Users/tkthe/Github/India/output/Imp_list_LS.csv")
+Imp_list_RG  <- data.frame(cbind(model_RG$coefnames,
+                        var_list$importance$Overall,
+                        temp@x[-1])) %>%
+             mutate(X2 = as.numeric(X2)) %>% 
+             rename(Var = X1,
+                    Importance = X2,
+                    coef = X3) %>% 
+             arrange(desc(Importance))
 
 ```
