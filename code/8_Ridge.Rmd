@@ -248,10 +248,8 @@ registerDoParallel(cl)
 
 stopCluster(cl)
 
-
+model_RG$finalModel
 temp <- coef(model_RG$finalModel, model_RG$finalModel$lambdaOpt)
-aa   <- temp@x[-1]
-aa
 
 var_list     <- varImp(model_RG, scale = TRUE)
 Imp_list_RG  <- data.frame(cbind(model_RG$coefnames,

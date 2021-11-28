@@ -204,12 +204,14 @@ cl <- makePSOCKcluster(no_cores)
   f_long_rhs  <- str_c(coef_lasso[,1], collapse = " + ")
   f_long_c    <- as.formula(str_c("oos_g_5to14 ~ ", f_long_rhs))
 
-  ols_model <- train(f_long_c, data = training, method = "lm")
 
 registerDoParallel(cl)
 
+ols_model <-   caret::train(f_long_c, data = training, method = "lm")
 
-  temp <- coef(ols_model$finalModel)
+stopCluster(cl)
+
+temp <- coef(ols_model$finalModel)
 
 var_list  <- varImp(ols_model, scale = TRUE)
 Imp_list_LS  <- data.frame(cbind(coef_lasso[,1],
@@ -222,13 +224,5 @@ Imp_list_LS  <- data.frame(cbind(coef_lasso[,1],
                 arrange(desc(Importance))
 
 write.csv(Imp_list_LS, "C:/Users/tkthe/Github/India/output/Imp_list_LS.csv")
-Imp_list_RG  <- data.frame(cbind(model_RG$coefnames,
-                        var_list$importance$Overall,
-                        temp@x[-1])) %>%
-             mutate(X2 = as.numeric(X2)) %>% 
-             rename(Var = X1,
-                    Importance = X2,
-                    coef = X3) %>% 
-             arrange(desc(Importance))
 
 ```

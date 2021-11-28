@@ -20,8 +20,7 @@ HH_list <- data_list %>%
 
 data <- data_ori %>% 
         mutate_at(.vars = vars(HH_list$Variable),
-                  .funs = list(num =  ~. *no_hh)) %>% 
-        mutate(poverty_num = poverty*tot_p)
+                  .funs = list(num =  ~. *no_hh))
 
 write.csv(data, "C:/Users/tkthe/Github/India/data/data.csv")
 
